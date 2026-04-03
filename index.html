@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Om Tea Point - POS</title>
+    <style>
+        :root { --primary: #003366; --accent: #b22222; --bg: #f4f4f4; --success: #28a745; --parcel: #ff8c00; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; background: var(--bg); }
+        header { background: var(--primary); color: white; padding: 15px; text-align: center; }
+        header h2 { margin: 0; font-size: 1.4rem; }
+        #menu-list { flex: 1; overflow-y: auto; padding: 15px; background: white; max-width: 800px; margin: 0 auto; width: 100%; box-sizing: border-box; }
+        .category-header { background: var(--accent); color: white; padding: 8px; margin: 20px 0 10px 0; font-size: 1.1rem; text-align: center; border-radius: 4px; }
+        .menu-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 5px; border-bottom: 1px solid #eee; }
+        .controls { display: flex; align-items: center; gap: 12px; }
+        button { cursor: pointer; border: none; border-radius: 5px; font-weight: bold; }
+        .btn-add { background: var(--success); color: white; padding: 8px 15px; font-size: 1.2rem; }
+        .btn-minus { background: #dc3545; color: white; padding: 8px 15px; font-size: 1.2rem; }
+        .table-section-title { font-weight: bold; margin-bottom: 10px; color: var(--primary); display: block; text-align: center; }
+        .table-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 15px; }
+        .table-btn { padding: 12px 5px; background: white; border: 2px solid var(--primary); color: var(--primary); border-radius: 8px; font-size: 0.9rem; transition: 0.2s; }
+        .table-btn.selected { background: var(--primary); color: white; transform: scale(0.95); }
+        .parcel-btn { border-color: var(--parcel); color: var(--parcel); }
+        .parcel-btn.selected { background: var(--parcel); color: white; border-color: var(--parcel); }
+        .order-summary { padding: 20px; background: #fff; border-top: 3px solid var(--primary); max-width: 800px; margin: 0 auto; width: 100%; box-sizing: border-box; box-shadow: 0 -4px 10px rgba(0,0,0,0.1); }
+        .total-display { display: flex; justify-content: space-between; font-size: 1.6rem; font-weight: bold; margin-bottom: 15px; color: var(--primary); }
+        .btn-order { background: var(--accent); color: white; padding: 15px; width: 100%; border-radius: 5px; font-size: 1.3rem; }
+        .price { color: #666; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <header><h2>ॐ ટી પોઈન્ટ એન્ડ નાસ્તા હાઉસ</h2></header>
+    <div id="menu-list"></div>
+    <div class="order-summary">
+        <span class="table-section-title">ઓર્ડર પ્રકાર (Order Type):</span>
+        <div id="table-grid" class="table-grid">
+            <button class="table-btn" onclick="selectTable(1)" id="t1">ટેબલ 1</button>
+            <button class="table-btn" onclick="selectTable(2)" id="t2">ટેબલ 2</button>
+            <button class="table-btn" onclick="selectTable(3)" id="t3">ટેબલ 3</button>
+            <button class="table-btn" onclick="selectTable(4)" id="t4">ટેબલ 4</button>
+            <button class="table-btn parcel-btn" onclick="selectTable('Parcel')" id="tp">પાર્સલ</button>
+        </div>
+        <div class="total-display"><span>Total Bill:</span><span id="cart-total">₹0</span></div>
+        <button class="btn-order" onclick="submitOrder()">SEND TO KITCHEN</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        const firebaseConfig = { databaseURL: "https://omteapoint-30fd7-default-rtdb.asia-southeast1.firebasedatabase.app/" };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        const menuData = [
+            { name: "ચા", price: 13, cat: "પીણાં" }, { name: "દૂધ", price: 35, cat: "પીણાં" }, { name: "કોફી", price: 20, cat: "પીણાં" }, { name: "બોર્નવીટા", price: 45, cat: "પીણાં" }, { name: "ગરમ બોર્નવીટા", price: 50, cat: "પીણાં" }, { name: "હળદર વાળુ દૂધ", price: 40, cat: "પીણાં" }, { name: "છાશ", price: 15, cat: "પીણાં" }, { name: "દહીં", price: 20, cat: "પીણાં" }, { name: "એક્સ્ટ્રા બટર/ બોર્નવીટા/ સેવ", price: 10, cat: "પીણાં" },
+            { name: "સાદા પૌવા", price: 25, cat: "પૌવા" }, { name: "સાદા ડુંગળી પૌવા", price: 30, cat: "પૌવા" }, { name: "ચટણી પૌવા", price: 30, cat: "પૌવા" }, { name: "બટાકા પૌવા", price: 35, cat: "પૌવા" }, { name: "બટર પૌવા", price: 40, cat: "પૌવા" }, { name: "મસાલા પૌવા", price: 35, cat: "પૌવા" }, { name: "મસાલા બટાકા પૌવા", price: 40, cat: "પૌવા" }, { name: "મસાલા બટર પૌવા", price: 50, cat: "પૌવા" }, { name: "મસાલા બટર બટાકા પૌવા", price: 55, cat: "પૌવા" },
+            { name: "સાદા થેપલા", price: 25, cat: "થેપલા" }, { name: "બટર થેપલા", price: 30, cat: "થેપલા" }, { name: "મસાલા થેપલા", price: 40, cat: "થેપલા" }, { name: "બટર સેવ થેપલા", price: 35, cat: "થેપલા" }, { name: "બટર સેવ ચીઝ થેપલા", price: 60, cat: "થેપલા" }, { name: "મસાલા બટર ચીઝ થેપલા", price: 65, cat: "થેપલા" },
+            { name: "સાદી ભાખરી", price: 25, cat: "ભાખરી" }, { name: "બટર ભાખરી", price: 30, cat: "ભાખરી" }, { name: "ફ્રાય ભાખરી", price: 35, cat: "ભાખરી" }, { name: "મસાલા ભાખરી", price: 40, cat: "ભાખરી" }, { name: "સેવ ફ્રાય ભાખરી", price: 45, cat: "ભાખરી" }, { name: "ચીઝ મસાલા ભાખરી", price: 65, cat: "ભાખરી" },
+            { name: "સેવ વઘારીયા", price: 40, cat: "વઘારીયા" }, { name: "બટર સેવ વઘારીયા", price: 50, cat: "વઘારીયા" },
+            { name: "આલુ પરોઠા", price: 30, cat: "આલુ પરોઠા" }, { name: "બટર આલુ પરોઠા", price: 35, cat: "આલુ પરોઠા" }, { name: "ચીઝ આલુ પરોઠા", price: 55, cat: "આલુ પરોઠા" }, { name: "મસાલા ચીઝ આલુ પરોઠા", price: 65, cat: "આલુ પરોઠા" },
+            { name: "મેગી", price: 50, cat: "મેગી" }, { name: "મસાલા મેગી", price: 60, cat: "મેગી" }, { name: "બટર મેગી", price: 75, cat: "મેગી" }, { name: "ચીઝ મેગી", price: 75, cat: "મેગી" },
+            { name: "સમોસા", price: 30, cat: "સમોસા" }, { name: "સેવ સમોસા", price: 45, cat: "સમોસા" }, { name: "સેવ દહીં સમોસા", price: 55, cat: "સમોસા" }, { name: "સેવ ચીઝ સમોસા", price: 65, cat: "સમોસા" },
+            { name: "ખાટીયા ઢોકળા", price: 35, cat: "ખાટીયા" },
+            { name: "બટર બન", price: 35, cat: "બ્રેડ-બન-સેન્ડવીચ" }, { name: "મસાલા બટર બન", price: 45, cat: "બ્રેડ-બન-સેન્ડવીચ" }, { name: "મસાલા સેન્ડવીચ", price: 40, cat: "બ્રેડ-બન-સેન્ડવીચ" }, { name: "બટર સેન્ડવીચ", price: 60, cat: "બ્રેડ-બન-સેન્ડવીચ" }, { name: "ચીઝ મસાલા સેન્ડવીચ", price: 60, cat: "બ્રેડ-બન-સેન્ડવીચ" }, { name: "બ્રેડ બટર", price: 30, cat: "બ્રેડ-બન-સેન્ડવીચ" }, { name: "ગરમ બ્રેડ બટર", price: 40, cat: "બ્રેડ-બન-સેન્ડવીચ" },
+            { name: "સાદો પફ", price: 20, cat: "સાદો પફ" }, { name: "સાદો સેવ પફ", price: 25, cat: "સાદો પફ" }, { name: "મસાલા પફ", price: 30, cat: "સાદો પફ" }, { name: "સીંગ મસાલા પફ", price: 30, cat: "સાદો પફ" }, { name: "બટર પફ", price: 30, cat: "સાદો પફ" }, { name: "બટર સેવ પફ", price: 35, cat: "સાદો પફ" }, { name: "સાદો ચીઝ પફ", price: 35, cat: "સાદો પફ" }, { name: "બટર સીંગ મસાલા પફ", price: 45, cat: "સાદો પફ" }, { name: "બટર મસાલા ચીઝ પફ", price: 45, cat: "સાદો પફ" }, { name: "બટર ચીઝ પફ", price: 50, cat: "સાદો પફ" }, { name: "બટર ચીઝ સીંગ મસાલા પફ", price: 55, cat: "સાદો પફ" },
+            { name: "પંજાબી પફ", price: 25, cat: "પંજાબી પફ" }, { name: "પંજાબી સેવ પફ", price: 30, cat: "પંજાબી પફ" }, { name: "પંજાબી બટર પફ", price: 35, cat: "પંજાબી પફ" }, { name: "પંજાબી બટર સેવ પફ", price: 40, cat: "પંજાબી પફ" }, { name: "પંજાબી ચીઝ પફ", price: 45, cat: "પંજાબી પફ" }, { name: "પંજાબી બટર ચીઝ પફ", price: 50, cat: "પંજાબી પફ" },
+            { name: "ચાઈનીઝ પફ", price: 25, cat: "ચાઈનીઝ પફ" }, { name: "ચાઈનીઝ સેવ પફ", price: 30, cat: "ચાઈનીઝ પફ" }, { name: "ચાઈનીઝ બટર પફ", price: 35, cat: "ચાઈનીઝ પફ" }, { name: "ચાઈનીઝ બટર સેવ પફ", price: 40, cat: "ચાઈનીઝ પફ" }, { name: "ચાઈનીઝ ચીઝ પફ", price: 45, cat: "ચાઈનીઝ પફ" }, { name: "ચાઈનીઝ બટર ચીઝ પફ", price: 50, cat: "ચાઈનીઝ પફ" },
+            { name: "બટાકાની સુકીભાજી", price: 30, cat: "સુકીભાજી - ખીચડી" }, { name: "દહીં ચેવડો", price: 35, cat: "સુકીભાજી - ખીચડી" }, { name: "સાબુદાણાની ખીચડી", price: 40, cat: "સુકીભાજી - ખીચડી" }
+        ];
+
+        let cart = {};
+        let selectedTable = null;
+
+        function selectTable(val) {
+            document.querySelectorAll('.table-btn').forEach(b => b.classList.remove('selected'));
+            if(val === 'Parcel') document.getElementById('tp').classList.add('selected');
+            else document.getElementById('t'+val).classList.add('selected');
+            selectedTable = val;
+        }
+
+        const menuDiv = document.getElementById('menu-list');
+        const categories = [...new Set(menuData.map(item => item.cat))];
+        categories.forEach(cat => {
+            const h = document.createElement('div'); h.className = 'category-header'; h.innerText = cat; menuDiv.appendChild(h);
+            menuData.filter(i => i.cat === cat).forEach(item => {
+                const div = document.createElement('div'); div.className = 'menu-item';
+                div.innerHTML = `<div style="flex:1;"><strong>${item.name}</strong><br><span class="price">₹${item.price}</span></div>
+                    <div class="controls"><button class="btn-minus" onclick="updateQty('${item.name}', -1)">-</button>
+                    <span id="qty-${item.name}" style="min-width: 25px; text-align: center; font-weight: bold;">0</span>
+                    <button class="btn-add" onclick="updateQty('${item.name}', 1)">+</button></div>`;
+                menuDiv.appendChild(div);
+            });
+        });
+
+        function updateQty(name, change) {
+            cart[name] = (cart[name] || 0) + change;
+            if (cart[name] < 0) cart[name] = 0;
+            document.getElementById(`qty-${name}`).innerText = cart[name];
+            calculateTotal();
+        }
+
+        function calculateTotal() {
+            let total = 0;
+            for (const [name, qty] of Object.entries(cart)) {
+                const item = menuData.find(i => i.name === name);
+                if (qty > 0) total += qty * item.price;
+            }
+            document.getElementById('cart-total').innerText = `₹${total}`;
+        }
+
+        function submitOrder() {
+            if (!selectedTable) { alert("મહેરબાની કરીને ટેબલ અથવા પાર્સલ પસંદ કરો!"); return; }
+            const items = Object.keys(cart).filter(n => cart[n] > 0).map(n => `${cart[n]}x ${n}`);
+            if (items.length === 0) { alert("ઓછામાં ઓછી એક વસ્તુ પસંદ કરો!"); return; }
+            
+            const total = document.getElementById('cart-total').innerText.replace('₹','');
+            const newOrder = { id: Date.now(), table: selectedTable, items: items, total: total, status: 'pending' };
+            
+            database.ref('orders/').push(newOrder).then(() => {
+                alert("ઓર્ડર રસોડામાં મોકલી દીધો છે!");
+                location.reload(); // Quick reset
+            });
+        }
+    </script>
+</body>
+</html>
