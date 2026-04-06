@@ -3,16 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Om Tea Point - POS with QR</title>
+    <title>Om Tea Point - Order</title>
     <style>
         :root { --primary: #003366; --accent: #b22222; --bg: #f4f4f4; --success: #28a745; --parcel: #ff8c00; --danger: #dc3545; --yellow: #ffc107; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: #333; overflow-x: hidden; }
-        header { background: var(--primary); color: white; padding: 15px; text-align: center; position: sticky; top: 0; z-index: 100; }
         
+        header { 
+            background: var(--primary); 
+            color: white; 
+            padding: 15px; 
+            text-align: center; 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+        }
+
+        /* Sidebar CSS */
+        .sidebar {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 300;
+            top: 0;
+            left: 0;
+            background-color: white;
+            overflow-x: hidden;
+            transition: 0.4s;
+            box-shadow: 2px 0 15px rgba(0,0,0,0.2);
+        }
+        .sidebar-content { padding: 20px; width: 260px; }
+        .close-sidebar { font-size: 30px; cursor: pointer; float: right; margin-top: -10px; }
+        .menu-icon { font-size: 24px; cursor: pointer; position: absolute; left: 15px; }
+
+        .history-card {
+            background: #fff;
+            border-left: 5px solid var(--primary);
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .history-date { font-weight: bold; color: var(--accent); font-size: 0.85rem; display: block; margin-bottom: 4px; }
+        .history-items { font-size: 0.85rem; color: #555; line-height: 1.4; }
+
         #main-container { max-width: 800px; margin: 0 auto; padding-bottom: 280px; }
         .category-header { background: var(--accent); color: white; padding: 10px; margin: 20px 0 10px 0; font-size: 1.1rem; text-align: center; border-radius: 4px; position: sticky; top: 55px; z-index: 10; }
         .menu-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 10px; border-bottom: 1px solid #eee; background: white; }
-        
         .controls { display: flex; align-items: center; gap: 12px; }
         button { cursor: pointer; border: none; border-radius: 5px; font-weight: bold; }
         .btn-add { background: var(--success); color: white; padding: 8px 15px; font-size: 1.2rem; }
@@ -28,34 +67,47 @@
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         .detail-header { background: white; padding: 15px; display: flex; justify-content: space-between; border-bottom: 1px solid #ddd; }
         .detail-body { flex: 1; padding: 20px; text-align: center; overflow-y: auto; }
-        
         .order-summary-box { background: white; border-radius: 12px; padding: 15px; text-align: left; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin: 15px 0; border-left: 6px solid var(--success); }
         .order-item-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f1f1f1; }
         .total-row { display: flex; justify-content: space-between; margin-top: 15px; font-size: 1.4rem; font-weight: bold; color: var(--primary); }
-
         .btn-cancel { color: var(--danger); background: none; margin-top: 25px; text-decoration: underline; font-size: 0.9rem; }
         .heart-icon { font-size: 80px; animation: heartbeat 1.2s infinite; color: var(--accent); }
         @keyframes heartbeat { 0% { transform: scale(1); } 20% { transform: scale(1.2); } 40% { transform: scale(1); } }
-        
         .qr-info-box { text-align: center; background: #e9ecef; padding: 8px; border-radius: 8px; margin-bottom: 10px; font-weight: bold; color: var(--primary); border: 1px dashed var(--primary); }
+        .new-tag { font-size: 0.7rem; background: var(--danger); color: white; padding: 2px 6px; border-radius: 4px; margin-left: 8px; vertical-align: middle; }
+        .is-new-item { color: var(--danger); font-weight: bold; }
+        #resume-order-btn { display: none; background: var(--primary); color: white; width: 95%; margin: 10px auto; padding: 12px; border-radius: 8px; text-align: center; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <header><h2>ॐ ટી પોઈન્ટ</h2></header>
+    <header>
+        <span class="menu-icon" onclick="toggleSidebar()">☰</span>
+        <h2>ॐ ટી પોઈન્ટ</h2>
+    </header>
+
+    <div id="mySidebar" class="sidebar">
+        <div class="sidebar-content">
+            <span class="close-sidebar" onclick="toggleSidebar()">×</span>
+            <h3 style="color:var(--primary); margin-top: 10px;">ઓર્ડર હિસ્ટ્રી 📋</h3>
+            <hr style="border: 0.5px solid #eee; margin-bottom: 20px;">
+            <div id="history-list">
+                <p style="color:gray; font-size: 0.9rem;">હજુ સુધી કોઈ ઓર્ડર નથી.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="resume-order-btn" onclick="openOrderDetail()">તમારો ચાલુ ઓર્ડર જોવા અહીં ક્લિક કરો 📋</div>
 
     <div id="status-bar" style="padding: 12px; background: #fff3cd; border-bottom: 1px solid #ffeeba; display: none; position: sticky; top: 55px; z-index: 50;">
         <b>સ્ટેટસ: </b> <span id="current-status-text">--</span>
         <button onclick="openOrderDetail()" style="float:right; background:var(--primary); color:white; padding:4px 10px; border-radius:4px;">વિગત</button>
     </div>
-
+    
     <div id="main-container"><div id="menu-list"></div></div>
 
     <div class="bottom-panel">
-        <div id="qr-display" class="qr-info-box" style="display: none;">
-            ટેબલ નંબર: <span id="auto-table-num"></span>
-        </div>
-
+        <div id="qr-display" class="qr-info-box" style="display: none;">ટેબલ નંબર: <span id="auto-table-num"></span></div>
         <div class="table-grid" id="manual-table-grid">
             <button class="table-btn" onclick="selectTable(1, this)">T-1</button>
             <button class="table-btn" onclick="selectTable(2, this)">T-2</button>
@@ -63,7 +115,6 @@
             <button class="table-btn" onclick="selectTable(4, this)">T-4</button>
             <button class="table-btn" onclick="selectTable('Parcel', this)" style="border-color:var(--parcel); color:var(--parcel);">પાર્સલ</button>
         </div>
-
         <div style="display: flex; justify-content: space-between; font-size: 1.4rem; font-weight: bold; margin-bottom: 10px;">
             <span>ટોટલ:</span> <span id="cart-total">₹0</span>
         </div>
@@ -73,8 +124,7 @@
     <div id="order-detail-page">
         <div class="detail-header">
             <button onclick="closeOrderDetail()" style="background:none; font-size:1.5rem;">✕</button>
-            <b>ઓર્ડર ટ્રેકિંગ</b>
-            <div style="width:30px;"></div>
+            <b>ઓર્ડર ટ્રેકિંગ</b><div style="width:30px;"></div>
         </div>
         <div class="detail-body">
             <div id="st-badge" style="padding:8px 20px; border-radius:20px; font-weight:bold; display:inline-block; background:#fff3cd;">તૈયાર થાય છે...</div>
@@ -82,7 +132,7 @@
             <div class="order-summary-box" id="st-items-list"></div>
             <div class="total-row" style="padding: 0 20px;"><span>ટોટલ બિલ</span><span id="st-total-amt"></span></div>
             <button id="edit-btn" style="background:var(--yellow); padding:15px; width:100%; border-radius:10px; margin-top:20px;" onclick="enableEditMode()">✏️ ઓર્ડર સુધારો</button>
-            <button id="cancel-btn" class="btn-cancel" onclick="cancelCurrentOrder()">ઓર્ડર રદ (Cancel) કરો</button>
+            <button id="cancel-btn" class="btn-cancel" onclick="cancelCurrentOrder()">ઓર્ડર રદ કરો</button>
         </div>
     </div>
 
@@ -90,11 +140,8 @@
         <div class="detail-body" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
             <div class="heart-icon">❤️</div>
             <h1 style="color:var(--primary); margin-top: 20px;">ખૂબ ખૂબ આભાર!</h1>
-            <p style="padding: 0 30px; color: #555; font-size: 1.1rem; line-height: 1.6; margin-top: 20px;">
-                "સેવામાં કોઈ પણ પ્રકારની કમી રહી ગઈ હોય તો અમે દિલગીર છીએ. અમને ક્ષમા કરશો."
-            </p>
-            <p style="margin-top: 40px; color: #999; font-weight: bold;">Om Tea Point ☕</p>
-            <button onclick="location.reload()" style="margin-top: 30px; background: var(--primary); color: white; padding: 12px 25px; border-radius: 8px; border: none; font-weight: bold;">નવો ઓર્ડર કરો</button>
+            <p style="padding: 0 30px; color: #555; font-size: 1.1rem; line-height: 1.6;">"સેવામાં કોઈ પણ પ્રકારની કમી રહી ગઈ હોય તો ક્ષમા કરશો."</p>
+            <button onclick="clearAndNewOrder()" style="margin-top: 30px; background: var(--primary); color: white; padding: 12px 25px; border-radius: 8px;">નવો ઓર્ડર કરો</button>
         </div>
     </div>
 
@@ -102,7 +149,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <script>
-        const firebaseConfig = { databaseURL: "https://omteapoint-30fd7-default-rtdb.asia-southeast1.firebasedatabase.app/" };
+        const firebaseConfig = { databaseURL: "https://omteapoint-da8c1-default-rtdb.asia-southeast1.firebasedatabase.app/" };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
@@ -125,6 +172,59 @@
         ];
 
         let cart = {}, selectedTable = null, activeOrderKey = null, isEditMode = false;
+
+        window.onload = function() {
+            checkQR(); 
+            renderMenu();
+            const savedKey = localStorage.getItem('om_tea_order_key');
+            if(savedKey) {
+                activeOrderKey = savedKey;
+                document.getElementById('resume-order-btn').style.display = 'block';
+                trackLiveOrder(activeOrderKey);
+            }
+        };
+
+        // --- Sidebar & History Logic ---
+        function toggleSidebar() {
+            const sb = document.getElementById("mySidebar");
+            if (sb.style.width === "280px") {
+                sb.style.width = "0";
+            } else {
+                sb.style.width = "280px";
+                renderHistory();
+            }
+        }
+
+        function saveToHistory(orderObj) {
+            let history = JSON.parse(localStorage.getItem('om_tea_history') || "[]");
+            const now = new Date();
+            const options = { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' };
+            orderObj.dateStr = now.toLocaleDateString('gu-IN', options);
+            
+            history.unshift(orderObj); // નવો ઓર્ડર લિસ્ટમાં સૌથી ઉપર
+            if(history.length > 15) history.pop(); // છેલ્લા ૧૫ ઓર્ડર સાચવો
+            
+            localStorage.setItem('om_tea_history', JSON.stringify(history));
+        }
+
+        function renderHistory() {
+            const historyList = document.getElementById('history-list');
+            const history = JSON.parse(localStorage.getItem('om_tea_history') || "[]");
+            
+            if(history.length === 0) {
+                historyList.innerHTML = '<p style="color:gray; font-size:0.9rem;">હજુ સુધી કોઈ ઓર્ડર નથી.</p>';
+                return;
+            }
+
+            historyList.innerHTML = history.map(h => `
+                <div class="history-card">
+                    <span class="history-date">${h.dateStr}</span>
+                    <div class="history-items">${h.items.map(i => i.replace(" (NEW)", "")).join(", ")}</div>
+                    <div style="text-align:right; font-weight:bold; color:var(--primary); margin-top:5px;">₹${h.total}</div>
+                </div>
+            `).join('');
+        }
+        // --------------------------------
 
         function checkQR() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -155,9 +255,6 @@
                 });
             });
         }
-        
-        checkQR();
-        renderMenu();
 
         function updateQty(n, v) {
             cart[n] = (cart[n] || 0) + v;
@@ -181,77 +278,128 @@
         }
 
         async function submitOrder() {
-            const items = Object.entries(cart).filter(([n,q]) => q > 0).map(([n,q]) => `${q}x ${n}`);
-            if(!selectedTable || items.length === 0) return alert("ટેબલ અને આઈટમ પસંદ કરો!");
-            const order = { table: selectedTable, items, total: document.getElementById('cart-total').innerText.replace('₹',''), status: 'pending', ts: Date.now() };
+            const currentItems = Object.entries(cart).filter(([n,q]) => q > 0);
+            if(!selectedTable || currentItems.length === 0) return alert("ટેબલ અને આઈટમ પસંદ કરો!");
+            
+            let finalItems = [];
+
             if(isEditMode && activeOrderKey) {
-                await database.ref('orders/' + activeOrderKey).update(order);
+                const snap = await database.ref('orders/' + activeOrderKey).once('value');
+                const oldOrder = snap.val();
+                if(!oldOrder) return alert("ઓર્ડર મળ્યો નથી!");
+                
+                const oldMap = {};
+                oldOrder.items.forEach(itemStr => {
+                    const cleanName = itemStr.replace(" (NEW)", "").split('x ')[1];
+                    const qty = parseInt(itemStr.split('x ')[0]);
+                    oldMap[cleanName] = (oldMap[cleanName] || 0) + qty;
+                });
+
+                currentItems.forEach(([name, qty]) => {
+                    const oldQty = oldMap[name] || 0;
+                    if (qty > oldQty) {
+                        if (oldQty > 0) {
+                            finalItems.push(`${oldQty}x ${name}`);
+                            finalItems.push(`${qty - oldQty}x ${name} (NEW)`);
+                        } else {
+                            finalItems.push(`${qty}x ${name} (NEW)`);
+                        }
+                    } else {
+                        finalItems.push(`${qty}x ${name}`);
+                    }
+                });
                 isEditMode = false; document.getElementById('main-submit-btn').innerText = "ઓર્ડર આપો (SEND)";
             } else {
-                const res = await database.ref('orders/').push(order); activeOrderKey = res.key;
+                finalItems = currentItems.map(([n,q]) => `${q}x ${n}`);
             }
-            trackLiveOrder(activeOrderKey); openOrderDetail();
-            cart = {}; document.querySelectorAll('b[id^="qty-"]').forEach(el => el.innerText = '0'); updateTotal();
+
+            const order = { table: selectedTable, items: finalItems, total: document.getElementById('cart-total').innerText.replace('₹',''), status: 'pending', ts: Date.now() };
+
+            if(activeOrderKey) {
+                await database.ref('orders/' + activeOrderKey).update(order);
+            } else {
+                const res = await database.ref('orders/').push(order); 
+                activeOrderKey = res.key;
+                localStorage.setItem('om_tea_order_key', activeOrderKey);
+                // Save to customer history
+                saveToHistory(order);
+            }
+
+            trackLiveOrder(activeOrderKey); 
+            openOrderDetail();
+            cart = {}; 
+            document.querySelectorAll('b[id^="qty-"]').forEach(el => el.innerText = '0'); 
+            updateTotal();
         }
 
         function trackLiveOrder(key) {
             database.ref('orders/' + key).on('value', snap => {
                 const o = snap.val(); 
-                
-                // જો Admin સાઇડથી ઓર્ડર PAID થઈ જાય (Remove થઈ જાય) તો Thank You પેજ બતાવવું
                 if(!o) { 
-                    showThankYou(); 
+                    if(localStorage.getItem('om_tea_order_key')) showThankYou(); 
                     return; 
                 }
-
+                
+                document.getElementById('resume-order-btn').style.display = 'block';
                 document.getElementById('status-bar').style.display='block';
                 document.getElementById('st-table-num').innerText = "ટેબલ: " + o.table;
                 document.getElementById('st-total-amt').innerText = "₹" + o.total;
+                
                 document.getElementById('st-items-list').innerHTML = o.items.map(i => {
-                    const p = i.split('x '); return `<div class="order-item-row"><span>${p[1]}</span><b>${p[0]}</b></div>`;
+                    const isNew = i.includes("(NEW)");
+                    const p = i.split('x ');
+                    const itemClass = isNew ? 'class="order-item-row is-new-item"' : 'class="order-item-row"';
+                    const label = isNew ? `<span class="new-tag">NEW</span>` : '';
+                    return `<div ${itemClass}><span>${p[1].replace(" (NEW)", "")}${label}</span><b>${p[0]}</b></div>`;
                 }).join('');
 
                 if(o.status === 'pending') {
                     document.getElementById('current-status-text').innerText = "બની રહ્યો છે... ⏳";
                     document.getElementById('st-badge').innerText = "બની રહ્યો છે...";
                     document.getElementById('st-badge').style.background = "#fff3cd";
-                    document.getElementById('cancel-btn').style.display = 'inline-block';
                 } else if(o.status === 'ready') {
                     document.getElementById('current-status-text').innerText = "તૈયાર છે! ✅";
                     document.getElementById('st-badge').innerText = "તૈયાર છે!";
                     document.getElementById('st-badge').style.background = "#d4edda";
-                    document.getElementById('cancel-btn').style.display = 'none';
                 }
             });
         }
 
         function cancelCurrentOrder() {
-            if(confirm("શું તમે ઓર્ડર રદ કરવા માંગો છો?")) {
-                database.ref('orders/' + activeOrderKey).remove();
-                activeOrderKey = null;
-                location.reload();
+            if(confirm("ઓર્ડર રદ કરવો છે?")) { 
+                database.ref('orders/' + activeOrderKey).remove(); 
+                localStorage.removeItem('om_tea_order_key');
+                location.reload(); 
             }
+        }
+
+        function clearAndNewOrder() {
+            localStorage.removeItem('om_tea_order_key');
+            location.reload();
         }
 
         function showThankYou() {
             document.getElementById('order-detail-page').style.display = 'none';
             document.getElementById('status-bar').style.display = 'none';
+            document.getElementById('resume-order-btn').style.display = 'none';
             document.getElementById('thanks-page').style.display = 'flex';
-            // 6 સેકન્ડ પછી પેજ રિફ્રેશ થશે જેથી નવો કસ્ટમર ઓર્ડર કરી શકે
-            setTimeout(() => { location.reload(); }, 6000);
         }
 
         function openOrderDetail() { document.getElementById('order-detail-page').style.display = 'flex'; }
         function closeOrderDetail() { document.getElementById('order-detail-page').style.display = 'none'; }
-
+        
         function enableEditMode() {
-            isEditMode = true;
+            isEditMode = true; 
             document.getElementById('main-submit-btn').innerText = "સુધારો મોકલો (UPDATE)";
             database.ref('orders/' + activeOrderKey).once('value', snap => {
                 const o = snap.val(); cart = {};
+                document.querySelectorAll('b[id^="qty-"]').forEach(el => el.innerText = '0');
                 o.items.forEach(line => {
-                    const [q, ...nParts] = line.split('x '); const n = nParts.join('x ');
-                    cart[n] = parseInt(q); if(document.getElementById(`qty-${n}`)) document.getElementById(`qty-${n}`).innerText = q;
+                    const cleanLine = line.replace(" (NEW)", "");
+                    const [q, ...nParts] = cleanLine.split('x '); 
+                    const n = nParts.join('x ');
+                    cart[n] = (cart[n] || 0) + parseInt(q);
+                    if(document.getElementById(`qty-${n}`)) document.getElementById(`qty-${n}`).innerText = cart[n];
                 });
                 updateTotal(); closeOrderDetail();
             });
