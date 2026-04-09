@@ -21,7 +21,6 @@
             align-items: center;
         }
 
-        /* Sidebar CSS */
         .sidebar {
             height: 100%;
             width: 0;
@@ -49,7 +48,7 @@
         .history-date { font-weight: bold; color: var(--accent); font-size: 0.85rem; display: block; margin-bottom: 4px; }
         .history-items { font-size: 0.85rem; color: #555; line-height: 1.4; }
 
-        #main-container { max-width: 800px; margin: 0 auto; padding-bottom: 280px; }
+        #main-container { max-width: 800px; margin: 0 auto; padding-bottom: 320px; } 
         .category-header { background: var(--accent); color: white; padding: 10px; margin: 20px 0 10px 0; font-size: 1.1rem; text-align: center; border-radius: 4px; position: sticky; top: 55px; z-index: 10; }
         .menu-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 10px; border-bottom: 1px solid #eee; background: white; }
         .controls { display: flex; align-items: center; gap: 12px; }
@@ -63,20 +62,20 @@
         .table-btn.selected { background: var(--primary); color: white; }
         .btn-order { background: var(--accent); color: white; padding: 15px; width: 100%; border-radius: 5px; font-size: 1.2rem; }
 
+        .note-input { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 0.9rem; }
+
         #order-detail-page, #thanks-page { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f0f2f5; z-index: 200; display: none; flex-direction: column; animation: slideUp 0.3s ease-out; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         .detail-header { background: white; padding: 15px; display: flex; justify-content: space-between; border-bottom: 1px solid #ddd; }
         .detail-body { flex: 1; padding: 20px; text-align: center; overflow-y: auto; }
         .order-summary-box { background: white; border-radius: 12px; padding: 15px; text-align: left; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin: 15px 0; border-left: 6px solid var(--success); }
-        .order-item-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f1f1f1; }
+        .order-item-row { display: flex; justify-content: space-between; padding: 10px 8px; border-bottom: 1px solid #f1f1f1; align-items: center; }
+        .st-note-box { background: #fff3cd; padding: 10px; border-radius: 8px; margin-top: 10px; font-size: 0.9rem; text-align: left; border-left: 4px solid #ffc107; }
         .total-row { display: flex; justify-content: space-between; margin-top: 15px; font-size: 1.4rem; font-weight: bold; color: var(--primary); }
         .btn-cancel { color: var(--danger); background: none; margin-top: 25px; text-decoration: underline; font-size: 0.9rem; }
         .heart-icon { font-size: 80px; animation: heartbeat 1.2s infinite; color: var(--accent); }
         @keyframes heartbeat { 0% { transform: scale(1); } 20% { transform: scale(1.2); } 40% { transform: scale(1); } }
         .qr-info-box { text-align: center; background: #e9ecef; padding: 8px; border-radius: 8px; margin-bottom: 10px; font-weight: bold; color: var(--primary); border: 1px dashed var(--primary); }
-        .new-tag { font-size: 0.7rem; background: var(--danger); color: white; padding: 2px 6px; border-radius: 4px; margin-left: 8px; vertical-align: middle; }
-        .is-new-item { color: var(--danger); font-weight: bold; }
-        #resume-order-btn { display: none; background: var(--primary); color: white; width: 95%; margin: 10px auto; padding: 12px; border-radius: 8px; text-align: center; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -97,7 +96,7 @@
         </div>
     </div>
 
-    <div id="resume-order-btn" onclick="openOrderDetail()">તમારો ચાલુ ઓર્ડર જોવા અહીં ક્લિક કરો 📋</div>
+    <div id="resume-order-btn" style="display:none; background: var(--primary); color: white; width: 95%; margin: 10px auto; padding: 12px; border-radius: 8px; text-align: center; font-weight: bold;" onclick="openOrderDetail()">તમારો ચાલુ ઓર્ડર જોવા અહીં ક્લિક કરો 📋</div>
 
     <div id="status-bar" style="padding: 12px; background: #fff3cd; border-bottom: 1px solid #ffeeba; display: none; position: sticky; top: 55px; z-index: 50;">
         <b>સ્ટેટસ: </b> <span id="current-status-text">--</span>
@@ -115,6 +114,9 @@
             <button class="table-btn" onclick="selectTable(4, this)">T-4</button>
             <button class="table-btn" onclick="selectTable('Parcel', this)" style="border-color:var(--parcel); color:var(--parcel);">પાર્સલ</button>
         </div>
+
+        <input type="text" id="special-note" class="note-input" placeholder="ખાસ નોંધ (દા.ત. મોળી ચા, તીખું ઓછું...)">
+
         <div style="display: flex; justify-content: space-between; font-size: 1.4rem; font-weight: bold; margin-bottom: 10px;">
             <span>ટોટલ:</span> <span id="cart-total">₹0</span>
         </div>
@@ -129,7 +131,9 @@
         <div class="detail-body">
             <div id="st-badge" style="padding:8px 20px; border-radius:20px; font-weight:bold; display:inline-block; background:#fff3cd;">તૈયાર થાય છે...</div>
             <h3 id="st-table-num"></h3>
-            <div class="order-summary-box" id="st-items-list"></div>
+            <div class="order-summary-box">
+                <div id="st-items-list"></div>
+                <div id="st-note-display"></div> </div>
             <div class="total-row" style="padding: 0 20px;"><span>ટોટલ બિલ</span><span id="st-total-amt"></span></div>
             <button id="edit-btn" style="background:var(--yellow); padding:15px; width:100%; border-radius:10px; margin-top:20px;" onclick="enableEditMode()">✏️ ઓર્ડર સુધારો</button>
             <button id="cancel-btn" class="btn-cancel" onclick="cancelCurrentOrder()">ઓર્ડર રદ કરો</button>
@@ -154,16 +158,18 @@
         const database = firebase.database();
 
         const menuData = [
-            { name: "ચા", price: 13, cat: "ગરમ પીણાં" }, { name: "કોફી", price: 20, cat: "ગરમ પીણાં" }, { name: "પાણી ની બોટલ", price: 10, cat: "ગરમ પીણાં" }, { name: "દૂધ", price: 35, cat: "ગરમ પીણાં" }, { name: "બોર્નવીટા", price: 45, cat: "ગરમ પીણાં" }, { name: "ગરમ બોર્નવીટા", price: 50, cat: "ગરમ પીણાં" }, { name: "હળદળ વાળુ દૂધ", price: 40, cat: "ગરમ પીણાં" }, { name: "છાશ", price: 15, cat: "ગરમ પીણાં" }, { name: "દહીં", price: 20, cat: "ગરમ પીણાં" }, { name: "એક્સ્ટ્રા બટર/બોર્નવીટા", price: 10, cat: "ગરમ પીણાં" },
+            { name: "ચા", price: 13, cat: "ગરમ પીણાં" }, 
+            { name: "ફુલ ચા", price: 26, cat: "ગરમ પીણાં" }, 
+            { name: "કોફી", price: 20, cat: "ગરમ પીણાં" }, { name: "પાણી ની બોટલ", price: 10, cat: "ગરમ પીણાં" }, { name: "દૂધ", price: 35, cat: "ગરમ પીણાં" }, { name: "બોર્નવીટા", price: 45, cat: "ગરમ પીણાં" }, { name: "ગરમ બોર્નવીટા", price: 50, cat: "ગરમ પીણાં" }, { name: "હળદળ વાળુ દૂધ", price: 40, cat: "ગરમ પીણાં" }, { name: "છાશ", price: 15, cat: "ગરમ પીણાં" }, { name: "દહીં", price: 20, cat: "ગરમ પીણાં" }, { name: "એક્સ્ટ્રા બટર/બોર્નવીટા", price: 10, cat: "ગરમ પીણાં" },
             { name: "સાદા પૌવા", price: 25, cat: "પૌવા" }, { name: "સાદા ડુંગળી પૌવા", price: 30, cat: "પૌવા" }, { name: "ચટણી પૌવા", price: 30, cat: "પૌવા" }, { name: "બટાકા પૌવા", price: 35, cat: "પૌવા" }, { name: "બટર પૌવા", price: 40, cat: "પૌવા" }, { name: "મસાલા પૌવા", price: 35, cat: "પૌવા" }, { name: "મસાલા બટાકા પૌવા", price: 40, cat: "પૌવા" }, { name: "મસાલા બટર પૌવા", price: 50, cat: "પૌવા" }, { name: "મસાલા બટર બટાકા પૌવા", price: 55, cat: "પૌવા" },
             { name: "સાદા થેપલા", price: 25, cat: "થેપલા" }, { name: "બટર થેપલા", price: 30, cat: "થેપલા" }, { name: "મસાલા થેપલા", price: 40, cat: "થેપલા" }, { name: "બટર સેવ થેપલા", price: 35, cat: "થેપલા" }, { name: "બટર સેવ ચીઝ થેપલા", price: 60, cat: "થેપલા" }, { name: "મસાલા બટર ચીઝ થેપલા", price: 65, cat: "થેપલા" },
             { name: "સાદી ભાખરી", price: 25, cat: "ભાખરી" }, { name: "બટર ભાખરી", price: 30, cat: "ભાખરી" }, { name: "ફ્રાય ભાખરી", price: 35, cat: "ભાખરી" }, { name: "મસાલા ભાખરી", price: 40, cat: "ભાખરી" }, { name: "સેવ ફ્રાય ભાખરી", price: 45, cat: "ભાખરી" }, { name: "ચીઝ મસાલા ભાખરી", price: 65, cat: "ભાખરી" },
             { name: "સેવ વઘારીયા", price: 40, cat: "વઘારીયા" }, { name: "બટર સેવ વઘારીયા", price: 50, cat: "વઘારીયા" }, { name: "મસાલા વઘારીયા", price: 60, cat: "વઘારીયા" },
-            { name: "આલુ પરોઠા", price: 30, cat: "આલુ પરોઠા" }, { name: "બટર આલુ પરોઠા", price: 35, cat: "આલુ પરોઠા" }, { name: "ચીઝ આલુ પરોઠા", price: 55, cat: "આલુ પરોઠા" }, { name: "મસાલા ચીઝ આલુ પરોઠા", price: 65, cat: "આલુ પરોઠા" },
+            { name: "તેલમાં આલુ પરોઠા", price: 30, cat: "આલુ પરોઠા" }, { name: "બટર આલુ પરોઠા", price: 35, cat: "આલુ પરોઠા" }, { name: "ચીઝ આલુ પરોઠા", price: 55, cat: "આલુ પરોઠા" }, { name: "મસાલા ચીઝ આલુ પરોઠા", price: 65, cat: "આલુ પરોઠા" },
             { name: "મેગી", price: 50, cat: "મેગી" }, { name: "મસાલા મેગી", price: 60, cat: "મેગી" }, { name: "બટર મેગી", price: 75, cat: "મેગી" }, { name: "ચીઝ મેગી", price: 75, cat: "મેગી" },
             { name: "સમોસા", price: 30, cat: "સમોસા" }, { name: "સેવ સમોસા", price: 45, cat: "સમોસા" }, { name: "સેવ દહીં સમોસા", price: 55, cat: "સમોસા" }, { name: "સેવ ચીઝ સમોસા", price: 65, cat: "સમોસા" },
             { name: "ખાટીયા ઢોકળા", price: 35, cat: "ખાટીયા" },
-            { name: "બટર બન", price: 35, cat: "નાસ્તો" }, { name: "મસાલા બટર બન", price: 45, cat: "નાસ્તો" }, { name: "મસાલા સેન્ડવીચ", price: 40, cat: "નાસ્તો" }, { name: "બટર સેન્ડવીચ", price: 60, cat: "નાસ્તો" }, { name: "ચીઝ મસાલા સેન્ડવીચ", price: 60, cat: "નાસ્તો" }, { name: "બ્રેડ બટર", price: 30, cat: "નાસ્તો" }, { name: "ગરમ બ્રેડ બટર", price: 40, cat: "નાસ્તો" },
+            { name: "બટર બન", price: 35, cat: "નાસ્તો" }, { name: "મસાલા બટર બન", price: 45, cat: "નાસ્તો" }, { name: "મસાલા સેન્ડવીચ", price: 40, cat: "નાસ્તો" }, { name: "બટર સેન્ડવીચ", price: 60, cat: "નાસ્તો" }, { name: "ચીઝ મસાલા સેન્ડવીચ", price: 60, cat: "નાસ્તો" }, { name: "બ્રેડ બટર (ઠંડુ)", price: 30, cat: "નાસ્તો" }, { name: "ગરમ બ્રેડ બટર", price: 40, cat: "નાસ્તો" },
             { name: "સાદો પફ", price: 20, cat: "પફ" }, { name: "સાદો સેવ પફ", price: 25, cat: "પફ" }, { name: "મસાલા પફ", price: 30, cat: "પફ" }, { name: "સીંગ મસાલા પફ", price: 30, cat: "પફ" }, { name: "બટર પફ", price: 30, cat: "પફ" }, { name: "બટર સેવ પફ", price: 35, cat: "પફ" }, { name: "સાદો ચીઝ પફ", price: 35, cat: "પફ" }, { name: "બટર સીંગ મસાલા પફ", price: 45, cat: "પફ" }, { name: "બટર મસાલા ચીઝ પફ", price: 45, cat: "પફ" }, { name: "બટર ચીઝ પફ", price: 50, cat: "પફ" }, { name: "બટર ચીઝ સીંગ મસાલા પફ", price: 55, cat: "પફ" },
             { name: "પંજાબી પફ", price: 25, cat: "પંજાબી પફ" }, { name: "પંજાબી સેવ પફ", price: 30, cat: "પંજાબી પફ" }, { name: "પંજાબી બટર પફ", price: 35, cat: "પંજાબી પફ" }, { name: "પંજાબી બટર સેવ પફ", price: 40, cat: "પંજાબી પફ" }, { name: "પંજાબી ચીઝ પફ", price: 45, cat: "પંજાબી પફ" }, { name: "પંજાબી બટર ચીઝ પફ", price: 50, cat: "પંજાબી પફ" },
             { name: "ચાઈનીઝ પફ", price: 25, cat: "ચાઈનીઝ પફ" }, { name: "ચાઈનીઝ સેવ પફ", price: 30, cat: "ચાઈનીઝ પફ" }, { name: "ચાઈનીઝ બટર પફ", price: 35, cat: "ચાઈનીઝ પફ" }, { name: "ચાઈનીઝ બટર સેવ પફ", price: 40, cat: "ચાઈનીઝ પફ" }, { name: "ચાઈનીઝ ચીઝ પફ", price: 45, cat: "ચાઈનીઝ પફ" }, { name: "ચાઈનીઝ બટર ચીઝ પફ", price: 50, cat: "ચાઈનીઝ પફ" },
@@ -184,7 +190,6 @@
             }
         };
 
-        // --- Sidebar & History Logic ---
         function toggleSidebar() {
             const sb = document.getElementById("mySidebar");
             if (sb.style.width === "280px") {
@@ -200,31 +205,26 @@
             const now = new Date();
             const options = { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' };
             orderObj.dateStr = now.toLocaleDateString('gu-IN', options);
-            
-            history.unshift(orderObj); // નવો ઓર્ડર લિસ્ટમાં સૌથી ઉપર
-            if(history.length > 15) history.pop(); // છેલ્લા ૧૫ ઓર્ડર સાચવો
-            
+            history.unshift(orderObj);
+            if(history.length > 15) history.pop();
             localStorage.setItem('om_tea_history', JSON.stringify(history));
         }
 
         function renderHistory() {
             const historyList = document.getElementById('history-list');
             const history = JSON.parse(localStorage.getItem('om_tea_history') || "[]");
-            
             if(history.length === 0) {
                 historyList.innerHTML = '<p style="color:gray; font-size:0.9rem;">હજુ સુધી કોઈ ઓર્ડર નથી.</p>';
                 return;
             }
-
             historyList.innerHTML = history.map(h => `
                 <div class="history-card">
                     <span class="history-date">${h.dateStr}</span>
-                    <div class="history-items">${h.items.map(i => i.replace(" (NEW)", "")).join(", ")}</div>
+                    <div class="history-items">${h.items.map(i => i.replace(" (NEW)", "").replace(" (CANCELLED)", "")).join(", ")}</div>
                     <div style="text-align:right; font-weight:bold; color:var(--primary); margin-top:5px;">₹${h.total}</div>
                 </div>
             `).join('');
         }
-        // --------------------------------
 
         function checkQR() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -281,6 +281,7 @@
             const currentItems = Object.entries(cart).filter(([n,q]) => q > 0);
             if(!selectedTable || currentItems.length === 0) return alert("ટેબલ અને આઈટમ પસંદ કરો!");
             
+            const specialNote = document.getElementById('special-note').value;
             let finalItems = [];
 
             if(isEditMode && activeOrderKey) {
@@ -290,44 +291,57 @@
                 
                 const oldMap = {};
                 oldOrder.items.forEach(itemStr => {
-                    const cleanName = itemStr.replace(" (NEW)", "").split('x ')[1];
-                    const qty = parseInt(itemStr.split('x ')[0]);
-                    oldMap[cleanName] = (oldMap[cleanName] || 0) + qty;
-                });
-
-                currentItems.forEach(([name, qty]) => {
-                    const oldQty = oldMap[name] || 0;
-                    if (qty > oldQty) {
-                        if (oldQty > 0) {
-                            finalItems.push(`${oldQty}x ${name}`);
-                            finalItems.push(`${qty - oldQty}x ${name} (NEW)`);
-                        } else {
-                            finalItems.push(`${qty}x ${name} (NEW)`);
-                        }
-                    } else {
-                        finalItems.push(`${qty}x ${name}`);
+                    if(!itemStr.includes("(CANCELLED)")) {
+                        const cleanName = itemStr.replace(" (NEW)", "").split('x ')[1];
+                        const qty = parseInt(itemStr.split('x ')[0]);
+                        oldMap[cleanName] = (oldMap[cleanName] || 0) + qty;
                     }
                 });
-                isEditMode = false; document.getElementById('main-submit-btn').innerText = "ઓર્ડર આપો (SEND)";
+
+                Object.keys({...oldMap, ...cart}).forEach(name => {
+                    const newQty = cart[name] || 0;
+                    const oldQty = oldMap[name] || 0;
+
+                    if (newQty > oldQty) {
+                        if (oldQty > 0) finalItems.push(`${oldQty}x ${name}`);
+                        finalItems.push(`${newQty - oldQty}x ${name} (NEW)`);
+                    } else if (newQty < oldQty) {
+                        if (newQty > 0) finalItems.push(`${newQty}x ${name}`);
+                        finalItems.push(`${oldQty - newQty}x ${name} (CANCELLED)`);
+                    } else if (newQty > 0) {
+                        finalItems.push(`${newQty}x ${name}`);
+                    }
+                });
+                isEditMode = false; 
+                document.getElementById('main-submit-btn').innerText = "ઓર્ડર આપો (SEND)";
             } else {
                 finalItems = currentItems.map(([n,q]) => `${q}x ${n}`);
             }
 
-            const order = { table: selectedTable, items: finalItems, total: document.getElementById('cart-total').innerText.replace('₹',''), status: 'pending', ts: Date.now() };
+            const order = { 
+                table: selectedTable, 
+                items: finalItems, 
+                total: document.getElementById('cart-total').innerText.replace('₹',''), 
+                status: 'pending', 
+                note: specialNote,
+                lastUpdated: Date.now() 
+            };
 
             if(activeOrderKey) {
                 await database.ref('orders/' + activeOrderKey).update(order);
             } else {
+                order.ts = Date.now();
                 const res = await database.ref('orders/').push(order); 
                 activeOrderKey = res.key;
                 localStorage.setItem('om_tea_order_key', activeOrderKey);
-                // Save to customer history
                 saveToHistory(order);
             }
 
             trackLiveOrder(activeOrderKey); 
             openOrderDetail();
+            
             cart = {}; 
+            document.getElementById('special-note').value = '';
             document.querySelectorAll('b[id^="qty-"]').forEach(el => el.innerText = '0'); 
             updateTotal();
         }
@@ -347,11 +361,27 @@
                 
                 document.getElementById('st-items-list').innerHTML = o.items.map(i => {
                     const isNew = i.includes("(NEW)");
+                    const isCan = i.includes("(CANCELLED)");
                     const p = i.split('x ');
-                    const itemClass = isNew ? 'class="order-item-row is-new-item"' : 'class="order-item-row"';
-                    const label = isNew ? `<span class="new-tag">NEW</span>` : '';
-                    return `<div ${itemClass}><span>${p[1].replace(" (NEW)", "")}${label}</span><b>${p[0]}</b></div>`;
+                    let rowStyle = "";
+                    let label = "";
+
+                    if(isNew) {
+                        label = `<span style="font-size:0.7rem; background:var(--yellow); color:black; padding:2px 6px; border-radius:4px; margin-left:8px; font-weight:bold;">NEW</span>`;
+                    } else if(isCan) {
+                        rowStyle = 'style="background:#ffecec; border-radius:5px; margin-bottom:2px;"';
+                        label = `<span style="font-size:0.7rem; background:var(--danger); color:white; padding:2px 6px; border-radius:4px; margin-left:8px; font-weight:bold;">CANCELLED</span>`;
+                    }
+
+                    return `<div class="order-item-row" ${rowStyle}><span style="${isCan ? 'color:var(--danger); font-weight:bold;' : ''}">${p[1].replace(" (NEW)", "").replace(" (CANCELLED)", "")}${label}</span><b style="${isCan ? 'color:var(--danger); text-decoration:line-through;' : ''}">${p[0]}</b></div>`;
                 }).join('');
+
+                const noteDiv = document.getElementById('st-note-display');
+                if(o.note) {
+                    noteDiv.innerHTML = `<div class="st-note-box"><b>નોંધ:</b> ${o.note}</div>`;
+                } else {
+                    noteDiv.innerHTML = '';
+                }
 
                 if(o.status === 'pending') {
                     document.getElementById('current-status-text').innerText = "બની રહ્યો છે... ⏳";
@@ -394,12 +424,15 @@
             database.ref('orders/' + activeOrderKey).once('value', snap => {
                 const o = snap.val(); cart = {};
                 document.querySelectorAll('b[id^="qty-"]').forEach(el => el.innerText = '0');
+                if(o.note) document.getElementById('special-note').value = o.note;
                 o.items.forEach(line => {
-                    const cleanLine = line.replace(" (NEW)", "");
-                    const [q, ...nParts] = cleanLine.split('x '); 
-                    const n = nParts.join('x ');
-                    cart[n] = (cart[n] || 0) + parseInt(q);
-                    if(document.getElementById(`qty-${n}`)) document.getElementById(`qty-${n}`).innerText = cart[n];
+                    if(!line.includes("(CANCELLED)")) {
+                        const cleanLine = line.replace(" (NEW)", "");
+                        const [q, ...nParts] = cleanLine.split('x '); 
+                        const n = nParts.join('x ');
+                        cart[n] = (cart[n] || 0) + parseInt(q);
+                        if(document.getElementById(`qty-${n}`)) document.getElementById(`qty-${n}`).innerText = cart[n];
+                    }
                 });
                 updateTotal(); closeOrderDetail();
             });
