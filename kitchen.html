@@ -2,12 +2,12 @@
 <html lang="gu">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Om Tea Point - Admin Pro (Full Fixed)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Om Tea Point - Admin Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #0a0a0a; --card: #161616; --text: #e0e0e0; --primary: #ffd700; --ready: #2ecc71; --danger: #ff4757; }
-        body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); margin: 0; overflow-x: hidden; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); margin: 0; overflow-x: hidden; touch-action: manipulation; }
         
         header { background: #000; padding: 15px; display: flex; align-items: center; border-bottom: 2px solid var(--primary); position: sticky; top: 0; z-index: 900; }
         .menu-btn { background: none; border: none; color: var(--primary); font-size: 1.8rem; cursor: pointer; margin-right: 15px; }
@@ -22,11 +22,16 @@
         .total-sales-box h4 { margin: 5px 0 0 0; font-size: 2rem; color: var(--ready); }
         .summary-item { display: flex; justify-content: space-between; padding: 8px 10px; background: #1e1e1e; margin-bottom: 5px; border-radius: 6px; font-size: 0.9rem; }
 
-        .btn-clear-history { background: var(--danger); color: white; width: 100%; margin-top: 20px; padding: 12px; border-radius: 8px; font-weight: bold; border: none; cursor: pointer; box-shadow: 0 4px 10px rgba(220, 53, 69, 0.3); }
+        .history-card { background: #1a1a1a; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 3px solid var(--primary); cursor: pointer; position: relative; }
+        .history-time { color: #888; font-size: 0.7rem; margin-bottom: 4px; display: block; }
+        .history-items { font-size: 0.85rem; color: #bbb; line-height: 1.3; }
+        .history-total { color: var(--ready); font-weight: bold; font-size: 0.9rem; margin-top: 4px; }
+
+        .btn-clear-history { background: var(--danger); color: white; width: 100%; margin-top: 10px; padding: 12px; border-radius: 8px; font-weight: bold; border: none; cursor: pointer; font-size: 0.85rem; }
 
         .content { padding: 15px; }
         .section-label { background: rgba(255, 215, 0, 0.1); padding: 10px 15px; font-weight: 600; border-left: 4px solid var(--primary); margin: 20px 0 10px 0; color: var(--primary); }
-        #pending-orders, #ready-orders { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 15px; }
+        #pending-orders, #ready-orders { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 15px; }
         
         .order-card { background: var(--card); border-radius: 15px; padding: 18px; border: 1px solid #222; position: relative; margin-bottom: 10px; }
         .table-display { font-size: 1.4rem; font-weight: 800; color: var(--primary); border-bottom: 1px solid #333; padding-bottom: 8px; }
@@ -34,7 +39,12 @@
         .items-list { list-style: none; padding: 0; margin: 10px 0; }
         .items-list li { padding: 8px 0; border-bottom: 1px solid #222; display: flex; justify-content: space-between; }
         
-        .item-new { color: var(--primary) !important; font-weight: bold; background: rgba(255, 215, 0, 0.08); border-radius: 5px; padding: 5px !important; border-left: 3px solid var(--primary); }
+        .admin-note-box { background: #ff4757; color: white; padding: 10px; border-radius: 8px; margin: 10px 0; font-size: 0.95rem; border-left: 5px solid #fff; animation: blink 1.5s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.8; } 100% { opacity: 1; } }
+
+        .item-new { color: var(--primary) !important; font-weight: bold; background: rgba(255, 215, 0, 0.1); border-radius: 5px; padding: 5px !important; border-left: 3px solid var(--primary); }
+        .item-reduced { color: #ff4757 !important; font-weight: bold; background: rgba(255, 71, 87, 0.1); border-radius: 5px; padding: 5px !important; border-left: 3px solid #ff4757; }
+        
         .total-amount { font-size: 1.6rem; color: var(--ready); font-weight: 800; }
         
         .footer-btns { display: flex; gap: 8px; margin-top: 15px; }
@@ -60,11 +70,18 @@
 
     <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
     <div class="sidebar" id="sidebar">
-        <h3 style="color:var(--primary)">💰 આજની કમાણી</h3>
+        <h3 style="color:var(--primary); margin-top:0;">💰 આજની કમાણી</h3>
         <div class="total-sales-box"><h4 id="grand-total-display">₹0</h4></div>
-        <h3 style="color:var(--primary)">📦 આઈટમ રિપોર્ટ</h3>
+        
+        <h3 style="color:var(--primary)">📦 આઈટમ રિપોર્ટર</h3>
         <div id="daily-summary"></div>
-        <button class="btn-clear-history" onclick="clearDailyHistory()">🗑️ Clear Today's History</button>
+        <button class="btn-clear-history" onclick="clearDailyReport()">🗑️ Clear Report</button>
+        
+        <hr style="border:0; border-top:1px solid #333; margin:25px 0;">
+        
+        <h3 style="color:var(--primary)">📜 ઓર્ડર હિસ્ટ્રી</h3>
+        <div id="order-history-list"></div>
+        <button class="btn-clear-history" onclick="clearOrderHistory()" style="background:#444;">🗑️ Clear History</button>
     </div>
 
     <header>
@@ -100,27 +117,30 @@
 
     <script>
         const firebaseConfig = { databaseURL: "https://omteapoint-da8c1-default-rtdb.asia-southeast1.firebasedatabase.app/" };
-        firebase.initializeApp(firebaseConfig);
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const database = firebase.database();
         
         let isFirstLoad = true;
-        let lastOrdersCount = 0;
-        let lastOrdersJSON = ""; 
+        let lastKnownUpdates = {}; 
         let audioEnabled = false;
         let currentEditKey = null;
         let editCart = {};
         let oldItemsMap = {};
+        let currentOrderNote = "";
 
         const menuData = [
-            { name: "ચા", price: 13 }, { name: "કોફી", price: 20 }, { name: "પાણી ની બોટલ", price: 10 }, { name: "દૂધ", price: 35 }, { name: "બોર્નવીટા", price: 45 }, { name: "ગરમ બોર્નવીટા", price: 50 }, { name: "હળદળ વાળુ દૂધ", price: 40 }, { name: "છાશ", price: 15 }, { name: "દહીં", price: 20 }, { name: "એક્સ્ટ્રા બટર/બોર્નવીટા", price: 10 },
+            { name: "ચા", price: 13 }, 
+            { name: "ફુલ ચા", price: 26 }, 
+            { name: "કોફી", price: 20 }, { name: "પાણી ની બોટલ", price: 10 }, { name: "દૂધ", price: 35 }, { name: "બોર્નવીટા", price: 45 }, { name: "ગરમ બોર્નવીટા", price: 50 }, { name: "હળદળ વાળુ દૂધ", price: 40 }, { name: "છાશ", price: 15 }, { name: "દહીં", price: 20 }, { name: "એક્સ્ટ્રા બટર/બોર્નવીટા", price: 10 },
             { name: "સાદા પૌવા", price: 25 }, { name: "સાદા ડુંગળી પૌવા", price: 30 }, { name: "ચટણી પૌવા", price: 30 }, { name: "બટાકા પૌવા", price: 35 }, { name: "બટર પૌવા", price: 40 }, { name: "મસાલા પૌવા", price: 35 }, { name: "મસાલા બટાકા પૌવા", price: 40 }, { name: "મસાલા બટર પૌવા", price: 50 }, { name: "મસાલા બટર બટાકા પૌવા", price: 55 },
             { name: "સાદા થેપલા", price: 25 }, { name: "બટર થેપલા", price: 30 }, { name: "મસાલા થેપલા", price: 40 }, { name: "બટર સેવ થેપલા", price: 35 }, { name: "બટર સેવ ચીઝ થેપલા", price: 60 }, { name: "મસાલા બટર ચીઝ થેપલા", price: 65 },
             { name: "સાદી ભાખરી", price: 25 }, { name: "બટર ભાખરી", price: 30 }, { name: "ફ્રાય ભાખરી", price: 35 }, { name: "મસાલા ભાખરી", price: 40 }, { name: "સેવ ફ્રાય ભાખરી", price: 45 }, { name: "ચીઝ મસાલા ભાખરી", price: 65 },
             { name: "સેવ વઘારીયા", price: 40 }, { name: "બટર સેવ વઘારીયા", price: 50 }, { name: "મસાલા વઘારીયા", price: 60 },
-            { name: "આલુ પરોઠા", price: 30 }, { name: "બટર આલુ પરોઠા", price: 35 }, { name: "ચીઝ આલુ પરોઠા", price: 55 }, { name: "મસાલા ચીઝ આલુ પરોઠા", price: 65 },
+            { name: "તેલમાં આલુ પરોઠા", price: 30 }, { name: "બટર આલુ પરોઠા", price: 35 }, { name: "ચીઝ આલુ પરોઠા", price: 55 }, { name: "મસાલા ચીઝ આલુ પરોઠા", price: 65 },
             { name: "મેગી", price: 50 }, { name: "મસાલા મેગી", price: 60 }, { name: "બટર મેગી", price: 75 }, { name: "ચીઝ મેગી", price: 75 },
             { name: "સમોસા", price: 30 }, { name: "સેવ સમોસા", price: 45 }, { name: "સેવ દહીં સમોસા", price: 55 }, { name: "સેવ ચીઝ સમોસા", price: 65 },
-            { name: "ખાટીયા ઢોકળા", price: 35 }, { name: "બટર બન", price: 35 }, { name: "મસાલા બટર બન", price: 45 }, { name: "મસાલા સેન્ડવીચ", price: 40 }, { name: "બટર સેન્ડવીચ", price: 60 }, { name: "ચીઝ મસાલા સેન્ડવીચ", price: 60 }, { name: "બ્રેડ બટર", price: 30 }, { name: "ગરમ બ્રેડ બટર", price: 40 },
+            { name: "ખાટીયા ઢોકળા", price: 35 }, { name: "બટર બન", price: 35 }, { name: "મસાલા બટર બન", price: 45 }, { name: "મસાલા સેન્ડવીચ", price: 40 }, { name: "બટર સેન્ડવીચ", price: 60 }, { name: "ચીઝ મસાલા સેન્ડવીચ", price: 60 }, 
+            { name: "બ્રેડ બટર (ઠંડુ)", price: 30 }, { name: "ગરમ બ્રેડ બટર", price: 40 },
             { name: "સાદો પફ", price: 20 }, { name: "સાદો સેવ પફ", price: 25 }, { name: "મસાલા પફ", price: 30 }, { name: "સીંગ મસાલા પફ", price: 30 }, { name: "બટર પફ", price: 30 }, { name: "બટર સેવ પફ", price: 35 }, { name: "સાદો ચીઝ પફ", price: 35 }, { name: "બટર સીંગ મસાલા પફ", price: 45 }, { name: "બટર મસાલા ચીઝ પફ", price: 45 }, { name: "બટર ચીઝ પફ", price: 50 }, { name: "બટર ચીઝ સીંગ મસાલા પફ", price: 55 },
             { name: "પંજાબી પફ", price: 25 }, { name: "પંજાબી સેવ પફ", price: 30 }, { name: "પંજાબી બટર પફ", price: 35 }, { name: "પંજાબી બટર સેવ પફ", price: 40 }, { name: "પંજાબી ચીઝ પફ", price: 45 }, { name: "પંજાબી બટર ચીઝ પફ", price: 50 },
             { name: "ચાઈનીઝ પફ", price: 25 }, { name: "ચાઈનીઝ સેવ પફ", price: 30 }, { name: "ચાઈનીઝ બટર પફ", price: 35 }, { name: "ચાઈનીઝ બટર સેવ પફ", price: 40 }, { name: "ચાઈનીઝ ચીઝ પફ", price: 45 }, { name: "ચાઈનીઝ બટર ચીઝ પફ", price: 50 },
@@ -128,83 +148,132 @@
             { name: "કડકડિયા", price: 45 }, { name: "દાબેલા ચણા ચાટ", price: 35 }, { name: "ચણા દાળ ચાટ", price: 35 }
         ];
 
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); document.querySelector('.sidebar-overlay').classList.toggle('active'); }
-        
-        function playSharpSound() { 
-            const sound = document.getElementById('order-sound'); 
-            if(sound) { 
-                sound.currentTime = 0; 
-                sound.play().catch(e => console.log("Audio play failed")); 
-            } 
-        }
+        const elements = {
+            pending: document.getElementById('pending-orders'),
+            ready: document.getElementById('ready-orders'),
+            grandTotal: document.getElementById('grand-total-display'),
+            summary: document.getElementById('daily-summary'),
+            historyList: document.getElementById('order-history-list')
+        };
 
-        function enableAudio() { if (!audioEnabled) { playSharpSound(); audioEnabled = true; } }
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); document.querySelector('.sidebar-overlay').classList.toggle('active'); }
+        function playSharpSound() { const sound = document.getElementById('order-sound'); if(sound && audioEnabled) { sound.currentTime = 0; sound.play().catch(e => console.warn("Blocked")); } }
+        function enableAudio() { if (!audioEnabled) { audioEnabled = true; playSharpSound(); } }
 
         function filterMenu() {
             const term = document.getElementById('menu-search').value.toLowerCase();
             document.querySelectorAll('.menu-row').forEach(row => { row.style.display = row.innerText.toLowerCase().includes(term) ? 'flex' : 'none'; });
         }
 
-        // Firebase Listener for Realtime Updates and Sounds
         database.ref('orders').on('value', snap => {
             const orders = snap.val() || {};
-            const currentOrdersCount = Object.keys(orders).length;
-            const currentOrdersJSON = JSON.stringify(orders);
-
-            // BEEP Sound logic: if count increases OR existing data changes
-            if (!isFirstLoad) {
-                if (currentOrdersCount > lastOrdersCount || (currentOrdersCount === lastOrdersCount && currentOrdersJSON !== lastOrdersJSON)) {
-                    playSharpSound();
-                }
-            }
-
-            lastOrdersCount = currentOrdersCount;
-            lastOrdersJSON = currentOrdersJSON;
-            isFirstLoad = false;
-
-            const pDiv = document.getElementById('pending-orders'); 
-            const rDiv = document.getElementById('ready-orders');
-            pDiv.innerHTML = ''; rDiv.innerHTML = '';
+            elements.pending.innerHTML = ''; elements.ready.innerHTML = '';
+            
+            let shouldPlaySound = false;
 
             Object.entries(orders).forEach(([key, o]) => {
-                const card = document.createElement('div'); 
-                card.className = 'order-card';
-                const itemsHTML = o.items.map(i => `<li class="${i.includes('(NEW)') ? 'item-new' : ''}"><span>${i.replace('(NEW)','')}</span></li>`).join('');
+                if (!isFirstLoad) {
+                    if (!lastKnownUpdates[key] || (o.lastUpdated && o.lastUpdated > lastKnownUpdates[key])) {
+                        shouldPlaySound = true;
+                    }
+                }
+                lastKnownUpdates[key] = o.lastUpdated || Date.now();
+
+                const card = document.createElement('div'); card.className = 'order-card';
+                const itemsHTML = o.items.map(i => {
+                    let cls = '';
+                    if(i.includes('(NEW)')) cls = 'item-new';
+                    if(i.includes('(REDUCED)') || i.includes('(CANCELLED)')) cls = 'item-reduced';
+                    return `<li class="${cls}"><span>${i.replace('(NEW)','').replace('(REDUCED)','').replace('(CANCELLED)','')}</span></li>`;
+                }).join('');
+
+                let noteHTML = (o.note && o.note.trim() !== "") ? `<div class="admin-note-box"><b>⚠️ નોંધ:</b> ${o.note}</div>` : '';
                 
-                card.innerHTML = `
-                    <div class="table-display">${o.table === 'Parcel' ? "🥡 PARCEL" : "🪑 TABLE " + o.table}</div>
+                card.innerHTML = `<div class="table-display">${o.table === 'Parcel' ? "🥡 PARCEL" : "🪑 TABLE " + o.table}</div>
                     <ul class="items-list">${itemsHTML}</ul>
+                    ${noteHTML}
                     <div class="total-amount">₹${o.total}</div>
                     <div class="footer-btns">
                         <button class="btn-edit" onclick="openEdit('${key}')">✏️</button>
                         ${o.status === 'pending' ? `<button class="btn-ready" onclick="updateStatus('${key}','ready')">READY</button>` : `<button class="btn-paid" onclick="completeOrder('${key}')">PAID</button>`}
                         <button class="btn-delete" onclick="deleteOrder('${key}')">🗑️</button>
                     </div>`;
-                
-                if(o.status === 'pending') pDiv.appendChild(card); else rDiv.appendChild(card);
+
+                if(o.status === 'pending') elements.pending.appendChild(card); else elements.ready.appendChild(card);
             });
+
+            if(shouldPlaySound) playSharpSound();
+            isFirstLoad = false;
         });
+
+        function completeOrder(key) {
+            database.ref('orders/' + key).once('value', snap => {
+                const o = snap.val(); if(!o) return;
+                const now = new Date();
+                const timestamp = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                
+                database.ref('daily_report/total_cash').transaction(c => (c || 0) + Number(o.total));
+                
+                o.items.forEach(line => {
+                    const parts = line.replace('(NEW)', '').replace('(REDUCED)','').replace('(CANCELLED)','').trim().split('x ');
+                    if(parts.length >= 2) database.ref('daily_report/items/' + parts[1].trim()).transaction(c => (c || 0) + Number(parts[0]));
+                });
+                database.ref('history').push({ ...o, completedAt: timestamp });
+                database.ref('orders/' + key).remove();
+            });
+        }
+
+        database.ref('daily_report').on('value', snap => {
+            const d = snap.val() || {};
+            elements.grandTotal.innerText = "₹" + (d.total_cash || 0);
+            elements.summary.innerHTML = Object.entries(d.items || {}).sort((a,b)=>b[1]-a[1]).map(([n,q]) => `<div class="summary-item"><span>${n}</span><b>${q}</b></div>`).join('');
+        });
+
+        database.ref('history').limitToLast(50).on('value', snap => {
+            const history = snap.val() || {};
+            elements.historyList.innerHTML = Object.entries(history).reverse().map(([hKey, o]) => {
+                const safeData = JSON.stringify(o).replace(/"/g, '&quot;');
+                return `<div class="history-card" onclick="restoreOrder('${hKey}', '${safeData}')">
+                    <span class="history-time">🕒 ${o.completedAt} | ${o.table === 'Parcel' ? 'Parcel' : 'T-'+o.table}</span>
+                    <div class="history-items">${o.items.map(i => i.replace('(NEW)','').replace('(REDUCED)','').replace('(CANCELLED)','')).join(', ')}</div>
+                    <div class="history-total">₹${o.total}</div>
+                </div>`
+            }).join('');
+        });
+
+        function restoreOrder(hKey, encodedData) {
+            const orderData = JSON.parse(encodedData.replace(/&quot;/g, '"'));
+            if(confirm("આ ઓર્ડરને ફરીથી એડિટ લિસ્ટમાં મોકલવો છે?")) {
+                database.ref('daily_report/total_cash').transaction(c => (c || 0) - Number(orderData.total));
+                orderData.items.forEach(line => {
+                    const parts = line.replace('(NEW)', '').replace('(REDUCED)','').replace('(CANCELLED)','').trim().split('x ');
+                    if(parts.length >= 2) database.ref('daily_report/items/' + parts[1].trim()).transaction(c => (c || 0) - Number(parts[0]));
+                });
+                database.ref('orders').push({ ...orderData, status: 'pending' });
+                database.ref('history/' + hKey).remove();
+                toggleSidebar();
+            }
+        }
 
         function openEdit(key) {
             currentEditKey = key; editCart = {}; oldItemsMap = {};
             database.ref('orders/' + key).once('value', snap => {
-                const o = snap.val();
-                if (!o) return;
+                const o = snap.val(); if (!o) return;
+                currentOrderNote = o.note || ""; 
                 o.items.forEach(line => {
-                    const clean = line.replace('(NEW)', '').trim();
-                    const parts = clean.split('x ');
-                    if(parts.length < 2) return;
+                    const clean = line.replace('(NEW)', '').replace('(REDUCED)','').replace('(CANCELLED)','').trim();
+                    const parts = clean.split('x '); if(parts.length < 2) return;
                     const q = parseInt(parts[0]); const n = parts[1].trim();
                     editCart[n] = (editCart[n] || 0) + q; 
-                    if(!line.includes('(NEW)')) oldItemsMap[n] = (oldItemsMap[n] || 0) + q;
+                    oldItemsMap[n] = (oldItemsMap[n] || 0) + q;
                 });
                 renderEditMenu(); document.getElementById('menu-modal').style.display = 'flex';
+                document.getElementById('menu-search').value = ''; filterMenu();
             });
         }
 
         function renderEditMenu() {
-            const list = document.getElementById('edit-items-list');
-            list.innerHTML = menuData.map(item => {
+            document.getElementById('edit-items-list').innerHTML = menuData.map(item => {
                 const q = editCart[item.name] || 0;
                 return `<div class="menu-row" style="${q > 0 ? 'background:rgba(255,215,0,0.1)' : ''}">
                     <div><b>${item.name}</b><br><small>₹${item.price}</small></div>
@@ -219,63 +288,46 @@
 
         function updateEditQty(name, val) {
             editCart[name] = (editCart[name] || 0) + val; if(editCart[name] < 0) editCart[name] = 0;
-            document.getElementById(`eqty-${name}`).innerText = editCart[name];
-            document.getElementById(`eqty-${name}`).closest('.menu-row').style.background = editCart[name] > 0 ? 'rgba(255,215,0,0.1)' : 'none';
+            const qEl = document.getElementById(`eqty-${name}`);
+            if(qEl) { 
+                qEl.innerText = editCart[name]; 
+                qEl.closest('.menu-row').style.background = editCart[name] > 0 ? 'rgba(255,215,0,0.1)' : 'none'; 
+            }
         }
 
         function saveEdit() {
             let finalItems = [], finalTotal = 0;
             Object.entries(editCart).forEach(([name, q]) => {
                 if(q <= 0) return; 
-                const price = menuData.find(m => m.name === name).price;
-                finalTotal += price * q; 
+                const menuItem = menuData.find(m => m.name === name);
+                finalTotal += (menuItem ? Number(menuItem.price) : 0) * q; 
                 const oldQ = oldItemsMap[name] || 0;
+                
                 if(q > oldQ) { 
                     if(oldQ > 0) finalItems.push(`${oldQ}x ${name}`); 
                     finalItems.push(`${q - oldQ}x ${name} (NEW)`); 
+                } else if (q < oldQ) {
+                    finalItems.push(`${q}x ${name} (REDUCED)`);
+                } else {
+                    finalItems.push(`${q}x ${name}`);
                 }
-                else { finalItems.push(`${q}x ${name}`); }
             });
             
-            if(finalItems.length > 0) {
-                database.ref('orders/' + currentEditKey).update({ items: finalItems, total: finalTotal, status: 'pending' });
-            } else {
-                database.ref('orders/' + currentEditKey).remove();
-            }
+            database.ref('orders/' + currentEditKey).update({ 
+                items: finalItems, 
+                total: finalTotal, 
+                status: 'pending',
+                note: currentOrderNote,
+                lastUpdated: Date.now() 
+            });
             closeEdit();
         }
 
         function closeEdit() { document.getElementById('menu-modal').style.display = 'none'; }
         function updateStatus(key, s) { database.ref('orders/' + key).update({ status: s }); }
-        function deleteOrder(key) { if(confirm("Delete?")) database.ref('orders/' + key).remove(); }
-        
-        function completeOrder(key) {
-            database.ref('orders/' + key).once('value', snap => {
-                const o = snap.val();
-                if(!o) return;
-                database.ref('daily_report/total_cash').transaction(c => (c || 0) + parseInt(o.total));
-                o.items.forEach(line => {
-                    const clean = line.replace('(NEW)', '').trim();
-                    const parts = clean.split('x ');
-                    if(parts.length < 2) return;
-                    const q = parseInt(parts[0]); const n = parts[1].trim();
-                    database.ref('daily_report/items/' + n).transaction(c => (c || 0) + q);
-                });
-                database.ref('orders/' + key).remove();
-            });
-        }
-
-        database.ref('daily_report').on('value', snap => {
-            const d = snap.val() || {};
-            document.getElementById('grand-total-display').innerText = "₹" + (d.total_cash || 0);
-            document.getElementById('daily-summary').innerHTML = Object.entries(d.items || {}).sort((a,b)=>b[1]-a[1]).map(([n,q]) => `<div class="summary-item"><span>${n}</span><b>${q}</b></div>`).join('');
-        });
-
-        function clearDailyHistory() {
-            if(confirm("શું તમે આજનો આખો હિસાબ સાફ કરવા માંગો છો?")) {
-                database.ref('daily_report').remove().then(() => alert("આજની હિસ્ટ્રી સાફ થઈ ગઈ છે! ✅"));
-            }
-        }
+        function deleteOrder(key) { if(confirm("ઓર્ડર કાઢી નાખવો છે?")) database.ref('orders/' + key).remove(); }
+        function clearDailyReport() { if(confirm("રિપોર્ટ સાફ કરવો છે?")) database.ref('daily_report').remove(); }
+        function clearOrderHistory() { if(confirm("હિસ્ટ્રી સાફ કરવી છે?")) database.ref('history').remove(); }
     </script>
 </body>
 </html>
