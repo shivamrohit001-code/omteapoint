@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Om Tea Point - Admin Pro</title>
+    <title>Om Tea Point - Admin Pro (Locked)</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #0a0a0a; --card: #161616; --text: #e0e0e0; --primary: #ffd700; --ready: #2ecc71; --danger: #ff4757; }
@@ -33,7 +33,7 @@
         .section-label { background: rgba(255, 215, 0, 0.1); padding: 10px 15px; font-weight: 600; border-left: 4px solid var(--primary); margin: 20px 0 10px 0; color: var(--primary); }
         #pending-orders, #ready-orders { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 15px; }
         
-        .order-card { background: var(--card); border-radius: 15px; padding: 18px; border: 1px solid #222; position: relative; margin-bottom: 10px; }
+        .order-card { background: var(--card); border-radius: 15px; padding: 18px; border: 1px solid #222; position: relative; margin-bottom: 10px; transition: opacity 0.3s; }
         .table-display { font-size: 1.4rem; font-weight: 800; color: var(--primary); border-bottom: 1px solid #333; padding-bottom: 8px; }
         
         .items-list { list-style: none; padding: 0; margin: 10px 0; }
@@ -86,7 +86,7 @@
 
     <header>
         <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-        <h2 id="header-title">☕ ADMIN PRO</h2>
+        <h2 id="header-title">☕ OM TEA POINT - ADMIN</h2>
     </header>
 
     <div class="content">
@@ -174,12 +174,15 @@
             Object.entries(orders).forEach(([key, o]) => {
                 if (!isFirstLoad) {
                     if (!lastKnownUpdates[key] || (o.lastUpdated && o.lastUpdated > lastKnownUpdates[key])) {
-                        shouldPlaySound = true;
+                        if(o.status === 'pending') shouldPlaySound = true;
                     }
                 }
                 lastKnownUpdates[key] = o.lastUpdated || Date.now();
 
-                const card = document.createElement('div'); card.className = 'order-card';
+                const card = document.createElement('div'); 
+                card.className = 'order-card';
+                card.id = `order-${key}`;
+
                 const itemsHTML = o.items.map(i => {
                     let cls = '';
                     if(i.includes('(NEW)')) cls = 'item-new';
@@ -195,7 +198,9 @@
                     <div class="total-amount">₹${o.total}</div>
                     <div class="footer-btns">
                         <button class="btn-edit" onclick="openEdit('${key}')">✏️</button>
-                        ${o.status === 'pending' ? `<button class="btn-ready" onclick="updateStatus('${key}','ready')">READY</button>` : `<button class="btn-paid" onclick="completeOrder('${key}')">PAID</button>`}
+                        ${o.status === 'pending' ? 
+                        `<button class="btn-ready" onclick="updateStatus('${key}','ready')">READY</button>` : 
+                        `<button class="btn-paid" onclick="completeOrder('${key}')">PAID</button>`}
                         <button class="btn-delete" onclick="deleteOrder('${key}')">🗑️</button>
                     </div>`;
 
@@ -206,21 +211,37 @@
             isFirstLoad = false;
         });
 
+        // આ ફંક્શન હવે Confirm પૂછશે, એટલે ઓર્ડર ડાયરેક્ટ ગાયબ નહીં થાય
         function completeOrder(key) {
-            database.ref('orders/' + key).once('value', snap => {
-                const o = snap.val(); if(!o) return;
-                const now = new Date();
-                const timestamp = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                
-                database.ref('daily_report/total_cash').transaction(c => (c || 0) + Number(o.total));
-                
-                o.items.forEach(line => {
-                    const parts = line.replace('(NEW)', '').replace('(REDUCED)','').replace('(CANCELLED)','').trim().split('x ');
-                    if(parts.length >= 2) database.ref('daily_report/items/' + parts[1].trim()).transaction(c => (c || 0) + Number(parts[0]));
+            if(confirm("શું આ બિલના પૈસા આવી ગયા છે? (PAID)\nહા પાડશો તો જ ઓર્ડર ગાયબ થશે.")) {
+                database.ref('orders/' + key).once('value', snap => {
+                    const o = snap.val(); if(!o) return;
+                    const now = new Date();
+                    const timestamp = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    
+                    database.ref('daily_report/total_cash').transaction(c => (c || 0) + Number(o.total));
+                    
+                    o.items.forEach(line => {
+                        const parts = line.replace('(NEW)', '').replace('(REDUCED)','').replace('(CANCELLED)','').trim().split('x ');
+                        if(parts.length >= 2) database.ref('daily_report/items/' + parts[1].trim()).transaction(c => (c || 0) + Number(parts[0]));
+                    });
+                    database.ref('history').push({ ...o, completedAt: timestamp });
+                    database.ref('orders/' + key).remove();
                 });
-                database.ref('history').push({ ...o, completedAt: timestamp });
+            }
+        }
+
+        // સ્ટેટસ બદલાતી વખતે સ્મૂધ ટ્રાન્ઝિશન
+        function updateStatus(key, s) {
+            const card = document.getElementById(`order-${key}`);
+            if(card) card.style.opacity = '0.5';
+            database.ref('orders/' + key).update({ status: s, lastUpdated: Date.now() });
+        }
+
+        function deleteOrder(key) {
+            if(confirm("ચેતવણી: શું તમે ખરેખર આ ઓર્ડર કાઢી નાખવા માંગો છો?")) {
                 database.ref('orders/' + key).remove();
-            });
+            }
         }
 
         database.ref('daily_report').on('value', snap => {
@@ -324,10 +345,8 @@
         }
 
         function closeEdit() { document.getElementById('menu-modal').style.display = 'none'; }
-        function updateStatus(key, s) { database.ref('orders/' + key).update({ status: s }); }
-        function deleteOrder(key) { if(confirm("ઓર્ડર કાઢી નાખવો છે?")) database.ref('orders/' + key).remove(); }
-        function clearDailyReport() { if(confirm("રિપોર્ટ સાફ કરવો છે?")) database.ref('daily_report').remove(); }
-        function clearOrderHistory() { if(confirm("હિસ્ટ્રી સાફ કરવી છે?")) database.ref('history').remove(); }
+        function clearDailyReport() { if(confirm("આખો આજનો રિપોર્ટ સાફ કરવો છે?")) database.ref('daily_report').remove(); }
+        function clearOrderHistory() { if(confirm("બધી હિસ્ટ્રી સાફ કરવી છે?")) database.ref('history').remove(); }
     </script>
 </body>
 </html>
