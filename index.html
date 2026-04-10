@@ -24,7 +24,6 @@
         .btn-add { background: var(--success); color: white; padding: 8px 15px; font-size: 1.2rem; }
         .btn-minus { background: var(--danger); color: white; padding: 8px 15px; font-size: 1.2rem; }
         .bottom-panel { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 800px; background: #fff; border-top: 4px solid var(--primary); box-shadow: 0 -4px 15px rgba(0,0,0,0.2); z-index: 90; padding: 15px; box-sizing: border-box; }
-        /* Table Grid માં 5 Table સેટ કરવા માટે repeat(3, 1fr) કર્યું છે */
         .table-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
         .table-btn { padding: 10px 5px; background: white; border: 2px solid var(--primary); color: var(--primary); border-radius: 8px; font-size: 0.8rem; }
         .table-btn.selected { background: var(--primary); color: white; }
@@ -74,11 +73,12 @@
     <div class="bottom-panel">
         <div id="qr-display" class="qr-info-box" style="display: none;">ટેબલ નંબર: <span id="auto-table-num"></span></div>
         <div class="table-grid" id="manual-table-grid">
-            <button class="table-btn" onclick="selectTable(1, this)">T-1</button>
-            <button class="table-btn" onclick="selectTable(2, this)">T-2</button>
-            <button class="table-btn" onclick="selectTable(3, this)">T-3</button>
-            <button class="table-btn" onclick="selectTable(4, this)">T-4</button>
-            <button class="table-btn" onclick="selectTable(5, this)">T-5</button> <button class="table-btn" onclick="selectTable('Parcel', this)" style="border-color:var(--parcel); color:var(--parcel);">પાર્સલ</button>
+            <button class="table-btn" id="t-btn-1" onclick="selectTable(1, this)">T-1</button>
+            <button class="table-btn" id="t-btn-2" onclick="selectTable(2, this)">T-2</button>
+            <button class="table-btn" id="t-btn-3" onclick="selectTable(3, this)">T-3</button>
+            <button class="table-btn" id="t-btn-4" onclick="selectTable(4, this)">T-4</button>
+            <button class="table-btn" id="t-btn-5" onclick="selectTable(5, this)">T-5</button> 
+            <button class="table-btn" id="t-btn-Parcel" onclick="selectTable('Parcel', this)" style="border-color:var(--parcel); color:var(--parcel);">પાર્સલ</button>
         </div>
 
         <input type="text" id="special-note" class="note-input" placeholder="ખાસ નોંધ (દા.ત. મોળી ચા, તીખું ઓછું...)">
@@ -123,7 +123,19 @@
         const database = firebase.database();
 
         const menuData = [
-            { name: "ચા", price: 13, cat: "ગરમ પીણાં" }, { name: "ફુલ ચા", price: 26, cat: "ગરમ પીણાં" }, { name: "કોફી", price: 20, cat: "ગરમ પીણાં" }, { name: "પાણી ની બોટલ", price: 10, cat: "ગરમ પીણાં" }, { name: "દૂધ", price: 35, cat: "ગરમ પીણાં" }, { name: "બોર્નવીટા", price: 45, cat: "ગરમ પીણાં" }, { name: "ગરમ બોર્નવીટા", price: 50, cat: "ગરમ પીણાં" }, { name: "હળદળ વાળુ દૂધ", price: 40, cat: "ગરમ પીણાં" }, { name: "છાશ", price: 15, cat: "ગરમ પીણાં" }, { name: "દહીં", price: 20, cat: "ગરમ પીણાં" }, { name: "એક્સ્ટ્રા બટર/બોર્નવીટા", price: 10, cat: "ગરમ પીણાં" },
+            { name: "ચા", price: 13, cat: "ગરમ પીણાં" }, 
+            { name: "ફુલ ચા", price: 26, cat: "ગરમ પીણાં" }, 
+            { name: "કોફી", price: 20, cat: "ગરમ પીણાં" }, 
+            { name: "પાણી ની બોટલ", price: 10, cat: "ગરમ પીણાં" }, 
+            { name: "દૂધ", price: 35, cat: "ગરમ પીણાં" }, 
+            { name: "ગરમ દૂધ", price: 40, cat: "ગરમ પીણાં" }, 
+            { name: "બોર્નવીટા", price: 45, cat: "ગરમ પીણાં" }, 
+            { name: "ગરમ બોર્નવીટા", price: 50, cat: "ગરમ પીણાં" }, 
+            { name: "હળદળ વાળુ દૂધ", price: 40, cat: "ગરમ પીણાં" }, 
+            { name: "છાશ", price: 15, cat: "ગરમ પીણાં" }, 
+            { name: "મસાલા છાશ", price: 16, cat: "ગરમ પીણાં" }, 
+            { name: "દહીં", price: 20, cat: "ગરમ પીણાં" }, 
+            { name: "એક્સ્ટ્રા બટર/બોર્નવીટા", price: 10, cat: "ગરમ પીણાં" },
             { name: "સાદા પૌવા", price: 25, cat: "પૌવા" }, { name: "સાદા ડુંગળી પૌવા", price: 30, cat: "પૌવા" }, { name: "ચટણી પૌવા", price: 30, cat: "પૌવા" }, { name: "બટાકા પૌવા", price: 35, cat: "પૌવા" }, { name: "બટર પૌવા", price: 40, cat: "પૌવા" }, { name: "મસાલા પૌવા", price: 35, cat: "પૌવા" }, { name: "મસાલા બટાકા પૌવા", price: 40, cat: "પૌવા" }, { name: "મસાલા બટર પૌવા", price: 50, cat: "પૌવા" }, { name: "મસાલા બટર બટાકા પૌવા", price: 55, cat: "પૌવા" },
             { name: "સાદા થેપલા", price: 25, cat: "થેપલા" }, { name: "બટર થેપલા", price: 30, cat: "થેપલા" }, { name: "મસાલા થેપલા", price: 40, cat: "થેપલા" }, { name: "બટર સેવ થેપલા", price: 35, cat: "થેપલા" }, { name: "બટર સેવ ચીઝ થેપલા", price: 60, cat: "થેપલા" }, { name: "મસાલા બટર ચીઝ થેપલા", price: 65, cat: "થેપલા" },
             { name: "સાદી ભાખરી", price: 25, cat: "ભાખરી" }, { name: "બટર ભાખરી", price: 30, cat: "ભાખરી" }, { name: "ફ્રાય ભાખરી", price: 35, cat: "ભાખરી" }, { name: "મસાલા ભાખરી", price: 40, cat: "ભાખરી" }, { name: "સેવ ફ્રાય ભાખરી", price: 45, cat: "ભાખરી" }, { name: "ચીઝ મસાલા ભાખરી", price: 65, cat: "ભાખરી" },
@@ -133,7 +145,11 @@
             { name: "સમોસા", price: 30, cat: "સમોસા" }, { name: "સેવ સમોસા", price: 45, cat: "સમોસા" }, { name: "સેવ દહીં સમોસા", price: 55, cat: "સમોસા" }, { name: "સેવ ચીઝ સમોસા", price: 65, cat: "સમોસા" },
             { name: "ખાટીયા ઢોકળા", price: 35, cat: "ખાટીયા" },
             { name: "બટર બન", price: 35, cat: "નાસ્તો" }, { name: "મસાલા બટર બન", price: 45, cat: "નાસ્તો" }, { name: "મસાલા સેન્ડવીચ", price: 40, cat: "નાસ્તો" }, { name: "બટર સેન્ડવીચ", price: 60, cat: "નાસ્તો" }, { name: "ચીઝ મસાલા સેન્ડવીચ", price: 60, cat: "નાસ્તો" }, { name: "બ્રેડ બટર (ઠંડુ)", price: 30, cat: "નાસ્તો" }, { name: "ગરમ બ્રેડ બટર", price: 40, cat: "નાસ્તો" },
-            { name: "સાદો પફ", price: 20, cat: "પફ" }, { name: "સાદો સેવ પફ", price: 25, cat: "પફ" }, { name: "મસાલા પફ", price: 30, cat: "પફ" }, { name: "સીંગ મસાલા પફ", price: 30, cat: "પફ" }, { name: "બટર પફ", price: 30, cat: "પફ" }, { name: "બટર સેવ પફ", price: 35, cat: "પફ" }, { name: "સાદો ચીઝ પફ", price: 35, cat: "પફ" }, { name: "બટર સીંગ મસાલા પફ", price: 45, cat: "પફ" }, { name: "બટર મસાલા ચીઝ પફ", price: 45, cat: "પફ" }, { name: "બટર ચીઝ પફ", price: 50, cat: "પફ" }, { name: "બટર ચીઝ સીંગ મસાલા પફ", price: 55, cat: "પફ" },
+            { name: "સાદો પફ", price: 20, cat: "પફ" }, { name: "સાદો સેવ પફ", price: 25, cat: "પફ" }, 
+            { name: "મસાલા પફ", price: 30, cat: "પફ" }, 
+            { name: "બટર મસાલા પફ", price: 45, cat: "પફ" },
+            { name: "બટર મસાલા ચીઝ પફ", price: 55, cat: "પફ" },
+            { name: "સીંગ મસાલા પફ", price: 30, cat: "પફ" }, { name: "બટર પફ", price: 30, cat: "પફ" }, { name: "બટર સેવ પફ", price: 35, cat: "પફ" }, { name: "સાદો ચીઝ પફ", price: 35, cat: "પફ" }, { name: "બટર સીંગ મસાલા પફ", price: 45, cat: "પફ" }, { name: "બટર ચીઝ પફ", price: 50, cat: "પફ" }, { name: "બટર ચીઝ સીંગ મસાલા પફ", price: 55, cat: "પફ" },
             { name: "પંજાબી પફ", price: 25, cat: "પંજાબી પફ" }, { name: "પંજાબી સેવ પફ", price: 30, cat: "પંજાબી પફ" }, { name: "પંજાબી બટર પફ", price: 35, cat: "પંજાબી પફ" }, { name: "પંજાબી બટર સેવ પફ", price: 40, cat: "પંજાબી પફ" }, { name: "પંજાબી ચીઝ પફ", price: 45, cat: "પંજાબી પફ" }, { name: "પંજાબી બટર ચીઝ પફ", price: 50, cat: "પંજાબી પફ" },
             { name: "ચાઈનીઝ પફ", price: 25, cat: "ચાઈનીઝ પફ" }, { name: "ચાઈનીઝ સેવ પફ", price: 30, cat: "ચાઈનીઝ પફ" }, { name: "ચાઈનીઝ બટર પફ", price: 35, cat: "ચાઈનીઝ પફ" }, { name: "ચાઈનીઝ બટર સેવ પફ", price: 40, cat: "ચાઈનીઝ પફ" }, { name: "ચાઈનીઝ ચીઝ પફ", price: 45, cat: "ચાઈનીઝ પફ" }, { name: "ચાઈનીઝ બટર ચીઝ પફ", price: 50, cat: "ચાઈનીઝ પફ" },
             { name: "બટાકાની સુકીભાજી", price: 30, cat: "સૂકીભાજી - ખીચડી" }, { name: "દહીં ચેવડો", price: 35, cat: "સૂકીભાજી - ખીચડી" }, { name: "સાબુદાણાની ખીચડી", price: 40, cat: "સૂકીભાજી - ખીચડી" }, { name: "ફરાળી ચેવડો", price: 10, cat: "સૂકીભાજી - ખીચડી" },
@@ -146,7 +162,6 @@
             checkQR(); 
             renderMenu();
 
-            // Refresh પર ડેટા પાછો લાવવા માટે
             const savedCart = localStorage.getItem('om_tea_current_cart');
             if (savedCart) {
                 cart = JSON.parse(savedCart);
@@ -157,7 +172,6 @@
                 updateTotal();
             }
 
-            // Edit mode status સાચવવા માટે
             if (localStorage.getItem('om_tea_edit_mode') === 'true') {
                 isEditMode = true;
                 document.getElementById('main-submit-btn').innerText = "સુધારો મોકલો (UPDATE)";
@@ -169,7 +183,23 @@
                 document.getElementById('resume-order-btn').style.display = 'block';
                 trackLiveOrder(activeOrderKey);
             }
+
+            const savedTable = localStorage.getItem('om_tea_selected_table');
+            if(savedTable) {
+                selectedTable = savedTable;
+                const btn = document.getElementById('t-btn-' + savedTable);
+                if(btn) btn.classList.add('selected');
+                if(activeOrderKey) lockTableSelection();
+            }
         };
+
+        function lockTableSelection() {
+            const grid = document.getElementById('manual-table-grid');
+            if(grid) grid.style.pointerEvents = 'none'; 
+            document.querySelectorAll('.table-btn').forEach(btn => {
+                if(!btn.classList.contains('selected')) btn.style.opacity = '0.5';
+            });
+        }
 
         function toggleSidebar() {
             const sb = document.getElementById("mySidebar");
@@ -216,7 +246,7 @@
                         const cleanLine = itemStr.replace(" (NEW)", "");
                         const [q, ...nParts] = cleanLine.split('x ');
                         const name = nParts.join('x ');
-                        cart[name] = parseInt(q);
+                        cart[name] = (cart[name] || 0) + parseInt(q);
                     }
                 });
                 localStorage.setItem('om_tea_current_cart', JSON.stringify(cart));
@@ -236,6 +266,7 @@
             const tableId = urlParams.get('t');
             if (tableId) {
                 selectedTable = tableId;
+                localStorage.setItem('om_tea_selected_table', tableId);
                 document.getElementById('manual-table-grid').style.display = 'none';
                 document.getElementById('qr-display').style.display = 'block';
                 document.getElementById('auto-table-num').innerText = (tableId === 'Parcel' ? "પાર્સલ" : "T-" + tableId);
@@ -278,7 +309,9 @@
         }
 
         function selectTable(t, btn) {
+            if(activeOrderKey) return; 
             selectedTable = t;
+            localStorage.setItem('om_tea_selected_table', t);
             document.querySelectorAll('.table-btn').forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
         }
@@ -298,15 +331,18 @@
                 const oldMap = {};
                 oldOrder.items.forEach(itemStr => {
                     if(!itemStr.includes("(CANCELLED)")) {
-                        const cleanName = itemStr.replace(" (NEW)", "").split('x ')[1];
-                        const qty = parseInt(itemStr.split('x ')[0]);
-                        oldMap[cleanName] = (oldMap[cleanName] || 0) + qty;
+                        const parts = itemStr.replace(" (NEW)", "").split('x ');
+                        const qty = parseInt(parts[0]);
+                        const name = parts[1];
+                        oldMap[name] = (oldMap[name] || 0) + qty;
                     }
                 });
 
-                Object.keys({...oldMap, ...cart}).forEach(name => {
-                    const newQty = cart[name] || 0;
+                const allNames = new Set([...Object.keys(oldMap), ...Object.keys(cart)]);
+                allNames.forEach(name => {
                     const oldQty = oldMap[name] || 0;
+                    const newQty = cart[name] || 0;
+
                     if (newQty > oldQty) {
                         if (oldQty > 0) finalItems.push(`${oldQty}x ${name}`);
                         finalItems.push(`${newQty - oldQty}x ${name} (NEW)`);
@@ -317,6 +353,7 @@
                         finalItems.push(`${newQty}x ${name}`);
                     }
                 });
+
                 isEditMode = false;
                 localStorage.removeItem('om_tea_edit_mode');
                 document.getElementById('main-submit-btn').innerText = "ઓર્ડર આપો (SEND)";
@@ -338,6 +375,7 @@
                 activeOrderKey = res.key;
                 localStorage.setItem('om_tea_order_key', activeOrderKey);
                 saveToHistory(order);
+                lockTableSelection();
             }
             trackLiveOrder(activeOrderKey);
             openOrderDetail();
@@ -386,6 +424,7 @@
                 localStorage.removeItem('om_tea_order_key');
                 localStorage.removeItem('om_tea_current_cart');
                 localStorage.removeItem('om_tea_edit_mode');
+                localStorage.removeItem('om_tea_selected_table');
                 location.reload();
             }
         }
@@ -394,11 +433,13 @@
             localStorage.removeItem('om_tea_order_key');
             localStorage.removeItem('om_tea_current_cart');
             localStorage.removeItem('om_tea_edit_mode');
+            localStorage.removeItem('om_tea_selected_table');
             location.reload();
         }
 
         function showThankYou() {
             cart = {}; localStorage.removeItem('om_tea_current_cart');
+            localStorage.removeItem('om_tea_selected_table');
             document.querySelectorAll('b[id^="qty-"]').forEach(el => el.innerText = '0');
             updateTotal();
             document.getElementById('order-detail-page').style.display = 'none';
@@ -421,13 +462,15 @@
                 o.items.forEach(line => {
                     if(!line.includes("(CANCELLED)")) {
                         const cleanLine = line.replace(" (NEW)", "");
-                        const [q, ...nParts] = cleanLine.split('x ');
-                        const n = nParts.join('x ');
-                        cart[n] = (cart[n] || 0) + parseInt(q);
+                        const parts = cleanLine.split('x ');
+                        const q = parseInt(parts[0]);
+                        const n = parts[1];
+                        cart[n] = (cart[n] || 0) + q;
                         if(document.getElementById(`qty-${n}`)) document.getElementById(`qty-${n}`).innerText = cart[n];
                     }
                 });
                 updateTotal(); closeOrderDetail();
+                window.scrollTo(0, document.body.scrollHeight);
             });
         }
     </script>
