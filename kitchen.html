@@ -72,13 +72,13 @@
     <div class="sidebar" id="sidebar">
         <h3 style="color:var(--primary); margin-top:0;">💰 આજની કમાણી</h3>
         <div class="total-sales-box"><h4 id="grand-total-display">₹0</h4></div>
-        
+        <br>
         <h3 style="color:var(--primary)">📦 આઈટમ રિપોર્ટર</h3>
         <div id="daily-summary"></div>
         <button class="btn-clear-history" onclick="clearDailyReport()">🗑️ Clear Report</button>
-        
+        <br>
         <hr style="border:0; border-top:1px solid #333; margin:25px 0;">
-        
+        <br>
         <h3 style="color:var(--primary)">📜 ઓર્ડર હિસ્ટ્રી</h3>
         <div id="order-history-list"></div>
         <button class="btn-clear-history" onclick="clearOrderHistory()" style="background:#444;">🗑️ Clear History</button>
@@ -93,7 +93,7 @@
         <audio id="order-sound" preload="auto">
             <source src="https://assets.mixkit.co/active_storage/sfx/941/941-preview.mp3" type="audio/mpeg">
         </audio>
-        
+        <br>
         <div class="section-label">બની રહ્યા છે (PENDING) ⏳</div>
         <div id="pending-orders"></div>
         <div class="section-label">તૈયાર / પેમેન્ટ બાકી (READY) ✅</div>
@@ -128,24 +128,37 @@
         let oldItemsMap = {};
         let currentOrderNote = "";
 
+        // અપડેટ કરેલું મેનુ લિસ્ટ
         const menuData = [
-            { name: "ચા", price: 13 }, 
-            { name: "ફુલ ચા", price: 26 }, 
-            { name: "કોફી", price: 20 }, { name: "પાણી ની બોટલ", price: 10 }, { name: "દૂધ", price: 35 }, { name: "બોર્નવીટા", price: 45 }, { name: "ગરમ બોર્નવીટા", price: 50 }, { name: "હળદળ વાળુ દૂધ", price: 40 }, { name: "છાશ", price: 15 }, { name: "દહીં", price: 20 }, { name: "એક્સ્ટ્રા બટર/બોર્નવીટા", price: 10 },
-            { name: "સાદા પૌવા", price: 25 }, { name: "સાદા ડુંગળી પૌવા", price: 30 }, { name: "ચટણી પૌવા", price: 30 }, { name: "બટાકા પૌવા", price: 35 }, { name: "બટર પૌવા", price: 40 }, { name: "મસાલા પૌવા", price: 35 }, { name: "મસાલા બટાકા પૌવા", price: 40 }, { name: "મસાલા બટર પૌવા", price: 50 }, { name: "મસાલા બટર બટાકા પૌવા", price: 55 },
-            { name: "સાદા થેપલા", price: 25 }, { name: "બટર થેપલા", price: 30 }, { name: "મસાલા થેપલા", price: 40 }, { name: "બટર સેવ થેપલા", price: 35 }, { name: "બટર સેવ ચીઝ થેપલા", price: 60 }, { name: "મસાલા બટર ચીઝ થેપલા", price: 65 },
-            { name: "સાદી ભાખરી", price: 25 }, { name: "બટર ભાખરી", price: 30 }, { name: "ફ્રાય ભાખરી", price: 35 }, { name: "મસાલા ભાખરી", price: 40 }, { name: "સેવ ફ્રાય ભાખરી", price: 45 }, { name: "ચીઝ મસાલા ભાખરી", price: 65 },
+            { name: "ચા", price: 13 }, { name: "ફુલ ચા", price: 26 }, { name: "કોફી", price: 20 },
+            { name: "પાણી ની બોટલ", price: 10 }, { name: "દૂધ", price: 35 }, { name: "બોર્નવીટા", price: 45 },
+            { name: "ગરમ બોર્નવીટા", price: 50 }, { name: "હળદળ વાળુ દૂધ", price: 40 }, { name: "છાશ", price: 15 },
+            { name: "દહીં", price: 20 }, { name: "એક્સ્ટ્રા બટર/બોર્નવીટા", price: 10 },
+            { name: "સાદા પૌવા", price: 25 }, { name: "સાદા ડુંગળી પૌવા", price: 30 }, { name: "ચટણી પૌવા", price: 30 },
+            { name: "બટાકા પૌવા", price: 35 }, { name: "બટર પૌવા", price: 40 }, { name: "મસાલા પૌવા", price: 35 },
+            { name: "મસાલા બટાકા પૌવા", price: 40 }, { name: "મસાલા બટર પૌવા", price: 50 }, { name: "મસાલા બટર બટાકા પૌવા", price: 55 },
+            { name: "સાદા થેપલા", price: 25 }, { name: "બટર થેપલા", price: 30 }, { name: "મસાલા થેપલા", price: 40 },
+            { name: "બટર સેવ થેપલા", price: 35 }, { name: "બટર સેવ ચીઝ થેપલા", price: 60 }, { name: "મસાલા બટર ચીઝ થેપલા", price: 65 },
+            { name: "સાદી ભાખરી", price: 25 }, { name: "બટર ભાખરી", price: 30 }, { name: "ફ્રાય ભાખરી", price: 35 },
+            { name: "મસાલા ભાખરી", price: 40 }, { name: "સેવ ફ્રાય ભાખરી", price: 45 }, { name: "ચીઝ મસાલા ભાખરી", price: 65 },
             { name: "સેવ વઘારીયા", price: 40 }, { name: "બટર સેવ વઘારીયા", price: 50 }, { name: "મસાલા વઘારીયા", price: 60 },
-            { name: "તેલમાં આલુ પરોઠા", price: 30 }, { name: "બટર આલુ પરોઠા", price: 35 }, { name: "ચીઝ આલુ પરોઠા", price: 55 }, { name: "મસાલા ચીઝ આલુ પરોઠા", price: 65 },
-            { name: "મેગી", price: 50 }, { name: "મસાલા મેગી", price: 60 }, { name: "બટર મેગી", price: 75 }, { name: "ચીઝ મેગી", price: 75 },
-            { name: "સમોસા", price: 30 }, { name: "સેવ સમોસા", price: 45 }, { name: "સેવ દહીં સમોસા", price: 55 }, { name: "સેવ ચીઝ સમોસા", price: 65 },
-            { name: "ખાટીયા ઢોકળા", price: 35 }, { name: "બટર બન", price: 35 }, { name: "મસાલા બટર બન", price: 45 }, { name: "મસાલા સેન્ડવીચ", price: 40 }, { name: "બટર સેન્ડવીચ", price: 60 }, { name: "ચીઝ મસાલા સેન્ડવીચ", price: 60 }, 
-            { name: "બ્રેડ બટર (ઠંડુ)", price: 30 }, { name: "ગરમ બ્રેડ બટર", price: 40 },
-            { name: "સાદો પફ", price: 20 }, { name: "સાદો સેવ પફ", price: 25 }, { name: "મસાલા પફ", price: 30 }, { name: "સીંગ મસાલા પફ", price: 30 }, { name: "બટર પફ", price: 30 }, { name: "બટર સેવ પફ", price: 35 }, { name: "સાદો ચીઝ પફ", price: 35 }, { name: "બટર સીંગ મસાલા પફ", price: 45 }, { name: "બટર મસાલા ચીઝ પફ", price: 45 }, { name: "બટર ચીઝ પફ", price: 50 }, { name: "બટર ચીઝ સીંગ મસાલા પફ", price: 55 },
-            { name: "પંજાબી પફ", price: 25 }, { name: "પંજાબી સેવ પફ", price: 30 }, { name: "પંજાબી બટર પફ", price: 35 }, { name: "પંજાબી બટર સેવ પફ", price: 40 }, { name: "પંજાબી ચીઝ પફ", price: 45 }, { name: "પંજાબી બટર ચીઝ પફ", price: 50 },
-            { name: "ચાઈનીઝ પફ", price: 25 }, { name: "ચાઈનીઝ સેવ પફ", price: 30 }, { name: "ચાઈનીઝ બટર પફ", price: 35 }, { name: "ચાઈનીઝ બટર સેવ પફ", price: 40 }, { name: "ચાઈનીઝ ચીઝ પફ", price: 45 }, { name: "ચાઈનીઝ બટર ચીઝ પફ", price: 50 },
-            { name: "બટાકાની સુકીભાજી", price: 30 }, { name: "દહીં ચેવડો", price: 35 }, { name: "સાબુદાણાની ખીચડી", price: 40 }, { name: "ફરાળી ચેવડો", price: 10 },
-            { name: "કડકડિયા", price: 45 }, { name: "દાબેલા ચણા ચાટ", price: 35 }, { name: "ચણા દાળ ચાટ", price: 35 }
+            { name: "તેલમાં આલુ પરોઠા", price: 30 }, { name: "બટર આલુ પરોઠા", price: 35 }, { name: "ચીઝ આલુ પરોઠા", price: 55 },
+            { name: "મસાલા ચીઝ આલુ પરોઠા", price: 65 }, { name: "મેગી", price: 50 }, { name: "મસાલા મેગી", price: 60 },
+            { name: "બટર મેગી", price: 75 }, { name: "ચીઝ મેગી", price: 75 }, { name: "સમોસા", price: 30 },
+            { name: "સેવ સમોસા", price: 45 }, { name: "સેવ દહીં સમોસા", price: 55 }, { name: "સેવ ચીઝ સમોસા", price: 65 },
+            { name: "ખાટીયા ઢોકળા", price: 35 }, { name: "બટર બન", price: 35 }, { name: "મસાલા બટર બન", price: 45 },
+            { name: "મસાલા સેન્ડવીચ", price: 40 }, { name: "બટર સેન્ડવીચ", price: 60 }, { name: "ચીઝ મસાલા સેન્ડવીચ", price: 60 }, 
+            { name: "બ્રેડ બટર (ઠંડુ)", price: 30 }, { name: "ગરમ બ્રેડ બટર", price: 40 }, { name: "સાદો પફ", price: 20 },
+            { name: "સાદો સેવ પફ", price: 25 }, { name: "મસાલા પફ", price: 30 }, { name: "સીંગ મસાલા પફ", price: 30 },
+            { name: "બટર પફ", price: 30 }, { name: "બટર સેવ પફ", price: 35 }, { name: "સાદો ચીઝ પફ", price: 35 },
+            { name: "બટર સીંગ મસાલા પફ", price: 45 }, { name: "બટર મસાલા ચીઝ પફ", price: 45 }, { name: "બટર ચીઝ પફ", price: 50 },
+            { name: "બટર ચીઝ સીંગ મસાલા પફ", price: 55 }, { name: "પંજાબી પફ", price: 25 }, { name: "પંજાબી સેવ પફ", price: 30 },
+            { name: "પંજાબી બટર પફ", price: 35 }, { name: "પંજાબી બટર સેવ પફ", price: 40 }, { name: "પંજાબી ચીઝ પફ", price: 45 },
+            { name: "પંજાબી બટર ચીઝ પફ", price: 50 }, { name: "ચાઈનીઝ પફ", price: 25 }, { name: "ચાઈનીઝ સેવ પફ", price: 30 },
+            { name: "ચાઈનીઝ બટર પફ", price: 35 }, { name: "ચાઈનીઝ બટર સેવ પફ", price: 40 }, { name: "ચાઈનીઝ ચીઝ પફ", price: 45 },
+            { name: "ચાઈનીઝ બટર ચીઝ પફ", price: 50 }, { name: "બટાકાની સુકીભાજી", price: 30 }, { name: "દહીં ચેવડો", price: 35 },
+            { name: "સાબુદાણાની ખીચડી", price: 40 }, { name: "ફરાળી ચેવડો", price: 10 }, { name: "કડકડિયા", price: 45 },
+            { name: "દાબેલા ચણા ચાટ", price: 35 }, { name: "ચણા દાળ ચાટ", price: 35 }
         ];
 
         const elements = {
@@ -211,7 +224,6 @@
             isFirstLoad = false;
         });
 
-        // આ ફંક્શન હવે Confirm પૂછશે, એટલે ઓર્ડર ડાયરેક્ટ ગાયબ નહીં થાય
         function completeOrder(key) {
             if(confirm("શું આ બિલના પૈસા આવી ગયા છે? (PAID)\nહા પાડશો તો જ ઓર્ડર ગાયબ થશે.")) {
                 database.ref('orders/' + key).once('value', snap => {
@@ -231,7 +243,6 @@
             }
         }
 
-        // સ્ટેટસ બદલાતી વખતે સ્મૂધ ટ્રાન્ઝિશન
         function updateStatus(key, s) {
             const card = document.getElementById(`order-${key}`);
             if(card) card.style.opacity = '0.5';
