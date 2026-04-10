@@ -128,11 +128,16 @@
         let oldItemsMap = {};
         let currentOrderNote = "";
 
-        // અપડેટ કરેલું મેનુ લિસ્ટ
+        // અપડેટ કરેલું મેનુ લિસ્ટ (નવી આઈટમ્સ સાથે)
         const menuData = [
             { name: "ચા", price: 13 }, { name: "ફુલ ચા", price: 26 }, { name: "કોફી", price: 20 },
-            { name: "પાણી ની બોટલ", price: 10 }, { name: "દૂધ", price: 35 }, { name: "બોર્નવીટા", price: 45 },
-            { name: "ગરમ બોર્નવીટા", price: 50 }, { name: "હળદળ વાળુ દૂધ", price: 40 }, { name: "છાશ", price: 15 },
+            { name: "પાણી ની બોટલ", price: 10 }, 
+            { name: "દૂધ", price: 35 }, 
+            { name: "ગરમ દૂધ", price: 40 }, 
+            { name: "બોર્નવીટા", price: 45 },
+            { name: "ગરમ બોર્નવીટા", price: 50 }, { name: "હળદળ વાળુ દૂધ", price: 40 }, 
+            { name: "છાશ", price: 15 }, 
+            { name: "મસાલા છાશ", price: 16 },
             { name: "દહીં", price: 20 }, { name: "એક્સ્ટ્રા બટર/બોર્નવીટા", price: 10 },
             { name: "સાદા પૌવા", price: 25 }, { name: "સાદા ડુંગળી પૌવા", price: 30 }, { name: "ચટણી પૌવા", price: 30 },
             { name: "બટાકા પૌવા", price: 35 }, { name: "બટર પૌવા", price: 40 }, { name: "મસાલા પૌવા", price: 35 },
@@ -142,13 +147,18 @@
             { name: "સાદી ભાખરી", price: 25 }, { name: "બટર ભાખરી", price: 30 }, { name: "ફ્રાય ભાખરી", price: 35 },
             { name: "મસાલા ભાખરી", price: 40 }, { name: "સેવ ફ્રાય ભાખરી", price: 45 }, { name: "ચીઝ મસાલા ભાખરી", price: 65 },
             { name: "સેવ વઘારીયા", price: 40 }, { name: "બટર સેવ વઘારીયા", price: 50 }, { name: "મસાલા વઘારીયા", price: 60 },
-            { name: "તેલમાં આલુ પરોઠા", price: 30 }, { name: "બટર આલુ પરોઠા", price: 35 }, { name: "ચીઝ આલુ પરોઠા", price: 55 },
+            { name: "તેલમાં આલુ પરોઠા", price: 30 }, { name: "બટર આલુ પરોઠા", price: 35 }, 
+            { name: "મસાલા આલુ પરોઠા", price: 55 }, 
+            { name: "ચીઝ આલુ પરોઠા", price: 55 },
             { name: "મસાલા ચીઝ આલુ પરોઠા", price: 65 }, { name: "મેગી", price: 50 }, { name: "મસાલા મેગી", price: 60 },
             { name: "બટર મેગી", price: 75 }, { name: "ચીઝ મેગી", price: 75 }, { name: "સમોસા", price: 30 },
             { name: "સેવ સમોસા", price: 45 }, { name: "સેવ દહીં સમોસા", price: 55 }, { name: "સેવ ચીઝ સમોસા", price: 65 },
             { name: "ખાટીયા ઢોકળા", price: 35 }, { name: "બટર બન", price: 35 }, { name: "મસાલા બટર બન", price: 45 },
             { name: "મસાલા સેન્ડવીચ", price: 40 }, { name: "બટર સેન્ડવીચ", price: 60 }, { name: "ચીઝ મસાલા સેન્ડવીચ", price: 60 }, 
-            { name: "બ્રેડ બટર (ઠંડુ)", price: 30 }, { name: "ગરમ બ્રેડ બટર", price: 40 }, { name: "સાદો પફ", price: 20 },
+            { name: "બ્રેડ બટર (ઠંડુ)", price: 30 }, { name: "ગરમ બ્રેડ બટર", price: 40 }, 
+            { name: "સાદો પફ", price: 20 },
+            { name: "મસાલા બટર પફ", price: 45 }, 
+            { name: "બટર મસાલા ચીઝ પફ", price: 55 }, 
             { name: "સાદો સેવ પફ", price: 25 }, { name: "મસાલા પફ", price: 30 }, { name: "સીંગ મસાલા પફ", price: 30 },
             { name: "બટર પફ", price: 30 }, { name: "બટર સેવ પફ", price: 35 }, { name: "સાદો ચીઝ પફ", price: 35 },
             { name: "બટર સીંગ મસાલા પફ", price: 45 }, { name: "બટર મસાલા ચીઝ પફ", price: 45 }, { name: "બટર ચીઝ પફ", price: 50 },
