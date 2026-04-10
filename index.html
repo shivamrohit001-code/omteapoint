@@ -44,9 +44,11 @@
             margin-bottom: 12px;
             border-radius: 6px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
         }
         .history-date { font-weight: bold; color: var(--accent); font-size: 0.85rem; display: block; margin-bottom: 4px; }
         .history-items { font-size: 0.85rem; color: #555; line-height: 1.4; }
+        .reorder-btn { background: var(--success); color: white; border-radius: 4px; padding: 4px 8px; font-size: 0.75rem; margin-top: 8px; }
 
         #main-container { max-width: 800px; margin: 0 auto; padding-bottom: 320px; } 
         .category-header { background: var(--accent); color: white; padding: 10px; margin: 20px 0 10px 0; font-size: 1.1rem; text-align: center; border-radius: 4px; position: sticky; top: 55px; z-index: 10; }
@@ -89,6 +91,7 @@
         <div class="sidebar-content">
             <span class="close-sidebar" onclick="toggleSidebar()">×</span>
             <h3 style="color:var(--primary); margin-top: 10px;">ઓર્ડર હિસ્ટ્રી 📋</h3>
+            <button onclick="clearHistory()" style="background:none; color:var(--danger); font-size:0.8rem; margin-bottom:10px; text-decoration:underline;">હિસ્ટ્રી સાફ કરો</button>
             <hr style="border: 0.5px solid #eee; margin-bottom: 20px;">
             <div id="history-list">
                 <p style="color:gray; font-size: 0.9rem;">હજુ સુધી કોઈ ઓર્ડર નથી.</p>
@@ -182,6 +185,17 @@
         window.onload = function() {
             checkQR(); 
             renderMenu();
+
+            const savedCart = localStorage.getItem('om_tea_current_cart');
+            if (savedCart) {
+                cart = JSON.parse(savedCart);
+                Object.keys(cart).forEach(name => {
+                    const el = document.getElementById(`qty-${name}`);
+                    if (el) el.innerText = cart[name];
+                });
+                updateTotal();
+            }
+
             const savedKey = localStorage.getItem('om_tea_order_key');
             if(savedKey) {
                 activeOrderKey = savedKey;
@@ -217,13 +231,41 @@
                 historyList.innerHTML = '<p style="color:gray; font-size:0.9rem;">હજુ સુધી કોઈ ઓર્ડર નથી.</p>';
                 return;
             }
-            historyList.innerHTML = history.map(h => `
+            historyList.innerHTML = history.map((h, index) => `
                 <div class="history-card">
                     <span class="history-date">${h.dateStr}</span>
                     <div class="history-items">${h.items.map(i => i.replace(" (NEW)", "").replace(" (CANCELLED)", "")).join(", ")}</div>
-                    <div style="text-align:right; font-weight:bold; color:var(--primary); margin-top:5px;">₹${h.total}</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+                        <b style="color:var(--primary);">₹${h.total}</b>
+                        <button class="reorder-btn" onclick="reorderItems(${index})">રી-ઓર્ડર 🔁</button>
+                    </div>
                 </div>
             `).join('');
+        }
+
+        function reorderItems(index) {
+            const history = JSON.parse(localStorage.getItem('om_tea_history') || "[]");
+            const oldOrder = history[index];
+            if(confirm("આ જૂના ઓર્ડરની બધી આઈટમ કાર્ટમાં ઉમેરવી છે?")) {
+                cart = {}; // Clear current cart
+                oldOrder.items.forEach(itemStr => {
+                    if(!itemStr.includes("(CANCELLED)")) {
+                        const cleanLine = itemStr.replace(" (NEW)", "");
+                        const [q, ...nParts] = cleanLine.split('x ');
+                        const name = nParts.join('x ');
+                        cart[name] = parseInt(q);
+                    }
+                });
+                localStorage.setItem('om_tea_current_cart', JSON.stringify(cart));
+                location.reload(); // Refresh to update UI
+            }
+        }
+
+        function clearHistory() {
+            if(confirm("શું તમે આખી હિસ્ટ્રી સાફ કરવા માંગો છો?")) {
+                localStorage.removeItem('om_tea_history');
+                renderHistory();
+            }
         }
 
         function checkQR() {
@@ -258,8 +300,9 @@
 
         function updateQty(n, v) {
             cart[n] = (cart[n] || 0) + v;
-            if(cart[n] < 0) cart[n] = 0;
-            document.getElementById(`qty-${n}`).innerText = cart[n];
+            if(cart[n] <= 0) delete cart[n];
+            if(document.getElementById(`qty-${n}`)) document.getElementById(`qty-${n}`).innerText = cart[n] || 0;
+            localStorage.setItem('om_tea_current_cart', JSON.stringify(cart));
             updateTotal();
         }
 
@@ -339,10 +382,7 @@
 
             trackLiveOrder(activeOrderKey); 
             openOrderDetail();
-            
-            cart = {}; 
             document.getElementById('special-note').value = '';
-            document.querySelectorAll('b[id^="qty-"]').forEach(el => el.innerText = '0'); 
             updateTotal();
         }
 
@@ -399,16 +439,23 @@
             if(confirm("ઓર્ડર રદ કરવો છે?")) { 
                 database.ref('orders/' + activeOrderKey).remove(); 
                 localStorage.removeItem('om_tea_order_key');
+                localStorage.removeItem('om_tea_current_cart');
                 location.reload(); 
             }
         }
 
         function clearAndNewOrder() {
             localStorage.removeItem('om_tea_order_key');
+            localStorage.removeItem('om_tea_current_cart');
             location.reload();
         }
 
         function showThankYou() {
+            cart = {};
+            localStorage.removeItem('om_tea_current_cart');
+            document.querySelectorAll('b[id^="qty-"]').forEach(el => el.innerText = '0');
+            updateTotal();
+
             document.getElementById('order-detail-page').style.display = 'none';
             document.getElementById('status-bar').style.display = 'none';
             document.getElementById('resume-order-btn').style.display = 'none';
