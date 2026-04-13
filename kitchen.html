@@ -119,7 +119,6 @@
                 <option value="3">🪑 Table 3</option>
                 <option value="4">🪑 Table 4</option>
                 <option value="5">🪑 Table 5</option>
-                <option value="Parcel">🥡 Extra Parcel</option>
             </select>
 
             <input type="text" id="menu-search" placeholder="શોધો..." onkeyup="filterMenu()">
@@ -154,7 +153,8 @@
             { name: "ચા દૂધ", price: 45 },
             { name: "બોર્નવીટા", price: 45 }, { name: "ગરમ બોર્નવીટા", price: 50 }, { name: "હળદળ વાળુ દૂધ", price: 40 }, 
             { name: "છાશ", price: 15 }, { name: "મસાલા છાશ", price: 16 }, { name: "દહીં", price: 20 }, 
-            { name: "એક્સ્ટ્રા બટર/બોર્નવીટા", price: 10 }, { name: "સાદા પૌવા", price: 25 }, { name: "સાદા ડુંગળી પૌવા", price: 30 }, 
+            { name: "એક્સ્ટ્રા બટર", price: 10 }, { name: "એક્સ્ટ્રા બોર્નવીટા", price: 5 }, { name: "એક્સ્ટ્રા સેવ", price: 10 }, { name: "એક્સ્ટ્રા ચીઝ", price: 20 },
+            { name: "સાદા પૌવા", price: 25 }, { name: "સાદા ડુંગળી પૌવા", price: 30 }, 
             { name: "ચટણી પૌવા", price: 30 }, { name: "બટાકા પૌવા", price: 35 }, { name: "બટર પૌવા", price: 40 }, 
             { name: "મસાલા પૌવા", price: 35 }, { name: "મસાલા બટાકા પૌવા", price: 40 }, { name: "મસાલા બટર પૌવા", price: 50 }, 
             { name: "મસાલા બટર બટાકા પૌવા", price: 55 }, { name: "સાદા થેપલા", price: 25 }, { name: "બટર થેપલા", price: 30 }, 
@@ -172,7 +172,7 @@
             { name: "ગરમ બ્રેડ બટર", price: 40 }, { name: "સાદો પફ", price: 20 }, { name: "મસાલા બટર પફ", price: 45 }, 
             { name: "બટર મસાલા ચીઝ પફ", price: 55 }, { name: "સાદો સેવ પફ", price: 25 }, { name: "મસાલા પફ", price: 30 }, 
             { name: "સીંગ મસાલા પફ", price: 30 }, { name: "બટર પફ", price: 30 }, { name: "બટર સેવ પફ", price: 35 }, 
-            { name: "સાદો ચીઝ પફ", price: 35 }, { name: "બટર સીંગ મસાલા પફ", price: 45 }, { name: "બટર મસાલા ચીઝ પફ", price: 45 }, 
+            { name: "સાદો ચીઝ પફ", price: 35 }, { name: "બટર સીંગ મસાલા પફ", price: 45 },
             { name: "બટર ચીઝ પફ", price: 50 }, { name: "બટર ચીઝ સીંગ મસાલા પફ", price: 55 }, { name: "પંજાબી પફ", price: 25 }, 
             { name: "પંજાબી સેવ પફ", price: 30 }, { name: "પંજાબી બટર પફ", price: 35 }, { name: "પંજાબી બટર સેવ પફ", price: 40 }, 
             { name: "પંજાબી ચીઝ પફ", price: 45 }, { name: "પંજાબી બટર ચીઝ પફ", price: 50 }, { name: "ચાઈનીઝ પફ", price: 25 }, 
@@ -199,7 +199,6 @@
             document.querySelectorAll('.menu-row').forEach(row => { row.style.display = row.innerText.toLowerCase().includes(term) ? 'flex' : 'none'; });
         }
 
-        // Timer Function - Only Ago Format
         function getTimeAgo(timestamp) {
             if (!timestamp) return "Just now";
             const diff = Math.floor((Date.now() - timestamp) / 60000);
