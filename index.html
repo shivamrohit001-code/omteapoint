@@ -31,7 +31,7 @@
         .note-input { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 0.9rem; }
         #order-detail-page, #thanks-page { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f0f2f5; z-index: 200; display: none; flex-direction: column; animation: slideUp 0.3s ease-out; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .detail-header { background: white; padding: 15px; display: flex; justify-content: space-between; border-bottom: 1px solid #ddd; }
+        .detail-header { background: white; padding: 15px; display: flex; justify-content: center; border-bottom: 1px solid #ddd; }
         .detail-body { flex: 1; padding: 20px; text-align: center; overflow-y: auto; }
         .order-summary-box { background: white; border-radius: 12px; padding: 15px; text-align: left; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin: 15px 0; border-left: 6px solid var(--success); }
         .order-item-row { display: flex; justify-content: space-between; padding: 10px 8px; border-bottom: 1px solid #f1f1f1; align-items: center; }
@@ -90,8 +90,7 @@
 
     <div id="order-detail-page">
         <div class="detail-header">
-            <button onclick="closeOrderDetail()" style="background:none; font-size:1.5rem;">✕</button>
-            <b>ઓર્ડર ટ્રેકિંગ</b><div style="width:30px;"></div>
+            <b>ઓર્ડર ટ્રેકિંગ</b>
         </div>
         <div class="detail-body">
             <div id="st-badge" style="padding:8px 20px; border-radius:20px; font-weight:bold; display:inline-block; background:#fff3cd;">તૈયાર થાય છે...</div>
@@ -125,6 +124,7 @@
         const menuData = [
             { name: "ચા", price: 13, cat: "ગરમ પીણાં" }, 
             { name: "ફુલ ચા", price: 26, cat: "ગરમ પીણાં" }, 
+            { name: "ચા દૂધ", price: 45, cat: "ગરમ પીણાં" }, 
             { name: "કોફી", price: 20, cat: "ગરમ પીણાં" }, 
             { name: "પાણી ની બોટલ", price: 10, cat: "ગરમ પીણાં" }, 
             { name: "દૂધ", price: 35, cat: "ગરમ પીણાં" }, 
