@@ -248,7 +248,7 @@
                     if(!itemStr.includes("(CANCELLED)")) {
                         const cleanLine = itemStr.replace(" (NEW)", "");
                         const [q, ...nParts] = cleanLine.split('x ');
-                        const name = nParts.join('x ');
+                        const name = nParts.join('x ').trim();
                         cart[name] = (cart[name] || 0) + parseInt(q);
                     }
                 });
@@ -336,7 +336,7 @@
                     if(!itemStr.includes("(CANCELLED)")) {
                         const parts = itemStr.replace(" (NEW)", "").split('x ');
                         const qty = parseInt(parts[0]);
-                        const name = parts[1];
+                        const name = parts[1].trim();
                         oldMap[name] = (oldMap[name] || 0) + qty;
                     }
                 });
@@ -458,21 +458,32 @@
             isEditMode = true;
             localStorage.setItem('om_tea_edit_mode', 'true');
             document.getElementById('main-submit-btn').innerText = "સુધારો મોકલો (UPDATE)";
+            
             database.ref('orders/' + activeOrderKey).once('value', snap => {
-                const o = snap.val(); cart = {};
+                const o = snap.val();
+                if(!o) return;
+                
+                // Reset Cart & UI
+                cart = {};
                 document.querySelectorAll('b[id^="qty-"]').forEach(el => el.innerText = '0');
+                
                 if(o.note) document.getElementById('special-note').value = o.note;
+                
                 o.items.forEach(line => {
                     if(!line.includes("(CANCELLED)")) {
                         const cleanLine = line.replace(" (NEW)", "");
                         const parts = cleanLine.split('x ');
                         const q = parseInt(parts[0]);
-                        const n = parts[1];
+                        const n = parts[1].trim();
+                        
                         cart[n] = (cart[n] || 0) + q;
-                        if(document.getElementById(`qty-${n}`)) document.getElementById(`qty-${n}`).innerText = cart[n];
+                        const qtyEl = document.getElementById(`qty-${n}`);
+                        if(qtyEl) qtyEl.innerText = cart[n];
                     }
                 });
+                
                 updateTotal();
+                localStorage.setItem('om_tea_current_cart', JSON.stringify(cart));
                 closeOrderDetail();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
