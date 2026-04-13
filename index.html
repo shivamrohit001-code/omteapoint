@@ -135,7 +135,10 @@
             { name: "છાશ", price: 15, cat: "ગરમ પીણાં" }, 
             { name: "મસાલા છાશ", price: 16, cat: "ગરમ પીણાં" }, 
             { name: "દહીં", price: 20, cat: "ગરમ પીણાં" }, 
-            { name: "એક્સ્ટ્રા બટર/બોર્નવીટા", price: 10, cat: "ગરમ પીણાં" },
+            { name: "એક્સ્ટ્રા બટર", price: 10, cat: "ગરમ પીણાં" },
+            { name: "એક્સ્ટ્રા બોર્નવીટા", price: 5, cat: "ગરમ પીણાં" },
+            { name: "એક્સ્ટ્રા સેવ", price: 10, cat: "ગરમ પીણાં" },
+            { name: "એક્સ્ટ્રા ચીઝ", price: 20, cat: "ગરમ પીણાં" },
             { name: "સાદા પૌવા", price: 25, cat: "પૌવા" }, { name: "સાદા ડુંગળી પૌવા", price: 30, cat: "પૌવા" }, { name: "ચટણી પૌવા", price: 30, cat: "પૌવા" }, { name: "બટાકા પૌવા", price: 35, cat: "પૌવા" }, { name: "બટર પૌવા", price: 40, cat: "પૌવા" }, { name: "મસાલા પૌવા", price: 35, cat: "પૌવા" }, { name: "મસાલા બટાકા પૌવા", price: 40, cat: "પૌવા" }, { name: "મસાલા બટર પૌવા", price: 50, cat: "પૌવા" }, { name: "મસાલા બટર બટાકા પૌવા", price: 55, cat: "પૌવા" },
             { name: "સાદા થેપલા", price: 25, cat: "થેપલા" }, { name: "બટર થેપલા", price: 30, cat: "થેપલા" }, { name: "મસાલા થેપલા", price: 40, cat: "થેપલા" }, { name: "બટર સેવ થેપલા", price: 35, cat: "થેપલા" }, { name: "બટર સેવ ચીઝ થેપલા", price: 60, cat: "થેપલા" }, { name: "મસાલા બટર ચીઝ થેપલા", price: 65, cat: "થેપલા" },
             { name: "સાદી ભાખરી", price: 25, cat: "ભાખરી" }, { name: "બટર ભાખરી", price: 30, cat: "ભાખરી" }, { name: "ફ્રાય ભાખરી", price: 35, cat: "ભાખરી" }, { name: "મસાલા ભાખરી", price: 40, cat: "ભાખરી" }, { name: "સેવ ફ્રાય ભાખરી", price: 45, cat: "ભાખરી" }, { name: "ચીઝ મસાલા ભાખરી", price: 65, cat: "ભાખરી" },
@@ -469,8 +472,9 @@
                         if(document.getElementById(`qty-${n}`)) document.getElementById(`qty-${n}`).innerText = cart[n];
                     }
                 });
-                updateTotal(); closeOrderDetail();
-                window.scrollTo(0, document.body.scrollHeight);
+                updateTotal();
+                closeOrderDetail();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             });
         }
     </script>
