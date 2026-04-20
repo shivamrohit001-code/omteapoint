@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="gu">
-<head>
+<!DOCTYPE html><html lang="gu"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Om Tea Point - Order</title>
@@ -62,7 +60,7 @@
     </div>
 
     <div id="resume-order-btn" style="display:none; background: var(--primary); color: white; width: 95%; margin: 10px auto; padding: 12px; border-radius: 8px; text-align: center; font-weight: bold;" onclick="openOrderDetail()">તમારો ચાલુ ઓર્ડર જોવા અહીં ક્લિક કરો 📋</div>
-
+    
     <div id="status-bar" style="padding: 12px; background: #fff3cd; border-bottom: 1px solid #ffeeba; display: none; position: sticky; top: 55px; z-index: 50;">
         <b>સ્ટેટસ: </b> <span id="current-status-text">--</span>
         <button onclick="openOrderDetail()" style="float:right; background:var(--primary); color:white; padding:4px 10px; border-radius:4px;">વિગત</button>
@@ -77,10 +75,9 @@
             <button class="table-btn" id="t-btn-2" onclick="selectTable(2, this)">T-2</button>
             <button class="table-btn" id="t-btn-3" onclick="selectTable(3, this)">T-3</button>
             <button class="table-btn" id="t-btn-4" onclick="selectTable(4, this)">T-4</button>
-            <button class="table-btn" id="t-btn-5" onclick="selectTable(5, this)">T-5</button> 
+            <button class="table-btn" id="t-btn-5" onclick="selectTable(5, this)">T-5</button>
             <button class="table-btn" id="t-btn-Parcel" onclick="selectTable('Parcel', this)" style="border-color:var(--parcel); color:var(--parcel);">પાર્સલ</button>
         </div>
-
         <input type="text" id="special-note" class="note-input" placeholder="ખાસ નોંધ (દા.ત. મોળી ચા, તીખું ઓછું...)">
         <div style="display: flex; justify-content: space-between; font-size: 1.4rem; font-weight: bold; margin-bottom: 10px;">
             <span>ટોટલ:</span> <span id="cart-total">₹0</span>
@@ -97,7 +94,8 @@
             <h3 id="st-table-num"></h3>
             <div class="order-summary-box">
                 <div id="st-items-list"></div>
-                <div id="st-note-display"></div> </div>
+                <div id="st-note-display"></div> 
+            </div>
             <div class="total-row" style="padding: 0 20px;"><span>ટોટલ બિલ</span><span id="st-total-amt"></span></div>
             <button id="edit-btn" style="background:var(--yellow); padding:15px; width:100%; border-radius:10px; margin-top:20px;" onclick="enableEditMode()">✏️ ઓર્ડર સુધારો</button>
             <button id="cancel-btn" class="btn-cancel" onclick="cancelCurrentOrder()">ઓર્ડર રદ કરો</button>
@@ -122,23 +120,7 @@
         const database = firebase.database();
 
         const menuData = [
-            { name: "ચા", price: 13, cat: "ગરમ પીણાં" }, 
-            { name: "ફુલ ચા", price: 26, cat: "ગરમ પીણાં" }, 
-            { name: "ચા દૂધ", price: 45, cat: "ગરમ પીણાં" }, 
-            { name: "કોફી", price: 20, cat: "ગરમ પીણાં" }, 
-            { name: "પાણી ની બોટલ", price: 10, cat: "ગરમ પીણાં" }, 
-            { name: "દૂધ", price: 35, cat: "ગરમ પીણાં" }, 
-            { name: "ગરમ દૂધ", price: 40, cat: "ગરમ પીણાં" }, 
-            { name: "બોર્નવીટા", price: 45, cat: "ગરમ પીણાં" }, 
-            { name: "ગરમ બોર્નવીટા", price: 50, cat: "ગરમ પીણાં" }, 
-            { name: "હળદળ વાળુ દૂધ", price: 40, cat: "ગરમ પીણાં" }, 
-            { name: "છાશ", price: 15, cat: "ગરમ પીણાં" }, 
-            { name: "મસાલા છાશ", price: 16, cat: "ગરમ પીણાં" }, 
-            { name: "દહીં", price: 20, cat: "ગરમ પીણાં" }, 
-            { name: "એક્સ્ટ્રા બટર", price: 10, cat: "ગરમ પીણાં" },
-            { name: "એક્સ્ટ્રા બોર્નવીટા", price: 5, cat: "ગરમ પીણાં" },
-            { name: "એક્સ્ટ્રા સેવ", price: 10, cat: "ગરમ પીણાં" },
-            { name: "એક્સ્ટ્રા ચીઝ", price: 20, cat: "ગરમ પીણાં" },
+            { name: "ચા", price: 13, cat: "ગરમ પીણાં" }, { name: "ફુલ ચા", price: 26, cat: "ગરમ પીણાં" }, { name: "ચા દૂધ", price: 45, cat: "ગરમ પીણાં" }, { name: "કોફી", price: 20, cat: "ગરમ પીણાં" }, { name: "પાણી ની બોટલ", price: 10, cat: "ગરમ પીણાં" }, { name: "દૂધ", price: 35, cat: "ગરમ પીણાં" }, { name: "ગરમ દૂધ", price: 40, cat: "ગરમ પીણાં" }, { name: "બોર્નવીટા", price: 45, cat: "ગરમ પીણાં" }, { name: "ગરમ બોર્નવીટા", price: 50, cat: "ગરમ પીણાં" }, { name: "હળદળ વાળુ દૂધ", price: 40, cat: "ગરમ પીણાં" }, { name: "છાશ", price: 15, cat: "ગરમ પીણાં" }, { name: "મસાલા છાશ", price: 16, cat: "ગરમ પીણાં" }, { name: "દહીં", price: 20, cat: "ગરમ પીણાં" }, { name: "એક્સ્ટ્રા બટર", price: 10, cat: "ગરમ પીણાં" }, { name: "એક્સ્ટ્રા બોર્નવીટા", price: 5, cat: "ગરમ પીણાં" }, { name: "એક્સ્ટ્રા સેવ", price: 10, cat: "ગરમ પીણાં" }, { name: "એક્સ્ટ્રા ચીઝ", price: 20, cat: "ગરમ પીણાં" },
             { name: "સાદા પૌવા", price: 25, cat: "પૌવા" }, { name: "સાદા ડુંગળી પૌવા", price: 30, cat: "પૌવા" }, { name: "ચટણી પૌવા", price: 30, cat: "પૌવા" }, { name: "બટાકા પૌવા", price: 35, cat: "પૌવા" }, { name: "બટર પૌવા", price: 40, cat: "પૌવા" }, { name: "મસાલા પૌવા", price: 35, cat: "પૌવા" }, { name: "મસાલા બટાકા પૌવા", price: 40, cat: "પૌવા" }, { name: "મસાલા બટર પૌવા", price: 50, cat: "પૌવા" }, { name: "મસાલા બટર બટાકા પૌવા", price: 55, cat: "પૌવા" },
             { name: "સાદા થેપલા", price: 25, cat: "થેપલા" }, { name: "બટર થેપલા", price: 30, cat: "થેપલા" }, { name: "મસાલા થેપલા", price: 40, cat: "થેપલા" }, { name: "બટર સેવ થેપલા", price: 35, cat: "થેપલા" }, { name: "બટર સેવ ચીઝ થેપલા", price: 60, cat: "થેપલા" }, { name: "મસાલા બટર ચીઝ થેપલા", price: 65, cat: "થેપલા" },
             { name: "સાદી ભાખરી", price: 25, cat: "ભાખરી" }, { name: "બટર ભાખરી", price: 30, cat: "ભાખરી" }, { name: "ફ્રાય ભાખરી", price: 35, cat: "ભાખરી" }, { name: "મસાલા ભાખરી", price: 40, cat: "ભાખરી" }, { name: "સેવ ફ્રાય ભાખરી", price: 45, cat: "ભાખરી" }, { name: "ચીઝ મસાલા ભાખરી", price: 65, cat: "ભાખરી" },
@@ -148,11 +130,7 @@
             { name: "સમોસા", price: 30, cat: "સમોસા" }, { name: "સેવ સમોસા", price: 45, cat: "સમોસા" }, { name: "સેવ દહીં સમોસા", price: 55, cat: "સમોસા" }, { name: "સેવ ચીઝ સમોસા", price: 65, cat: "સમોસા" },
             { name: "ખાટીયા ઢોકળા", price: 35, cat: "ખાટીયા" },
             { name: "બટર બન", price: 35, cat: "નાસ્તો" }, { name: "મસાલા બટર બન", price: 45, cat: "નાસ્તો" }, { name: "મસાલા સેન્ડવીચ", price: 40, cat: "નાસ્તો" }, { name: "બટર સેન્ડવીચ", price: 60, cat: "નાસ્તો" }, { name: "ચીઝ મસાલા સેન્ડવીચ", price: 60, cat: "નાસ્તો" }, { name: "બ્રેડ બટર (ઠંડુ)", price: 30, cat: "નાસ્તો" }, { name: "ગરમ બ્રેડ બટર", price: 40, cat: "નાસ્તો" },
-            { name: "સાદો પફ", price: 20, cat: "પફ" }, { name: "સાદો સેવ પફ", price: 25, cat: "પફ" }, 
-            { name: "મસાલા પફ", price: 30, cat: "પફ" }, 
-            { name: "બટર મસાલા પફ", price: 45, cat: "પફ" },
-            { name: "બટર મસાલા ચીઝ પફ", price: 55, cat: "પફ" },
-            { name: "સીંગ મસાલા પફ", price: 30, cat: "પફ" }, { name: "બટર પફ", price: 30, cat: "પફ" }, { name: "બટર સેવ પફ", price: 35, cat: "પફ" }, { name: "સાદો ચીઝ પફ", price: 35, cat: "પફ" }, { name: "બટર સીંગ મસાલા પફ", price: 45, cat: "પફ" }, { name: "બટર ચીઝ પફ", price: 50, cat: "પફ" }, { name: "બટર ચીઝ સીંગ મસાલા પફ", price: 55, cat: "પફ" },
+            { name: "સાદો પફ", price: 20, cat: "પફ" }, { name: "સાદો સેવ પફ", price: 25, cat: "પફ" }, { name: "મસાલા પફ", price: 30, cat: "પફ" }, { name: "બટર મસાલા પફ", price: 45, cat: "પફ" }, { name: "બટર મસાલા ચીઝ પફ", price: 55, cat: "પફ" }, { name: "સીંગ મસાલા પફ", price: 30, cat: "પફ" }, { name: "બટર પફ", price: 30, cat: "પફ" }, { name: "બટર સેવ પફ", price: 35, cat: "પફ" }, { name: "સાદો ચીઝ પફ", price: 35, cat: "પફ" }, { name: "બટર સીંગ મસાલા પફ", price: 45, cat: "પફ" }, { name: "બટર ચીઝ પફ", price: 50, cat: "પફ" }, { name: "બટર ચીઝ સીંગ મસાલા પફ", price: 55, cat: "પફ" },
             { name: "પંજાબી પફ", price: 25, cat: "પંજાબી પફ" }, { name: "પંજાબી સેવ પફ", price: 30, cat: "પંજાબી પફ" }, { name: "પંજાબી બટર પફ", price: 35, cat: "પંજાબી પફ" }, { name: "પંજાબી બટર સેવ પફ", price: 40, cat: "પંજાબી પફ" }, { name: "પંજાબી ચીઝ પફ", price: 45, cat: "પંજાબી પફ" }, { name: "પંજાબી બટર ચીઝ પફ", price: 50, cat: "પંજાબી પફ" },
             { name: "ચાઈનીઝ પફ", price: 25, cat: "ચાઈનીઝ પફ" }, { name: "ચાઈનીઝ સેવ પફ", price: 30, cat: "ચાઈનીઝ પફ" }, { name: "ચાઈનીઝ બટર પફ", price: 35, cat: "ચાઈનીઝ પફ" }, { name: "ચાઈનીઝ બટર સેવ પફ", price: 40, cat: "ચાઈનીઝ પફ" }, { name: "ચાઈનીઝ ચીઝ પફ", price: 45, cat: "ચાઈનીઝ પફ" }, { name: "ચાઈનીઝ બટર ચીઝ પફ", price: 50, cat: "ચાઈનીઝ પફ" },
             { name: "બટાકાની સુકીભાજી", price: 30, cat: "સૂકીભાજી - ખીચડી" }, { name: "દહીં ચેવડો", price: 35, cat: "સૂકીભાજી - ખીચડી" }, { name: "સાબુદાણાની ખીચડી", price: 40, cat: "સૂકીભાજી - ખીચડી" }, { name: "ફરાળી ચેવડો", price: 10, cat: "સૂકીભાજી - ખીચડી" },
@@ -164,7 +142,6 @@
         window.onload = function() {
             checkQR(); 
             renderMenu();
-
             const savedCart = localStorage.getItem('om_tea_current_cart');
             if (savedCart) {
                 cart = JSON.parse(savedCart);
@@ -174,19 +151,16 @@
                 });
                 updateTotal();
             }
-
             if (localStorage.getItem('om_tea_edit_mode') === 'true') {
                 isEditMode = true;
                 document.getElementById('main-submit-btn').innerText = "સુધારો મોકલો (UPDATE)";
             }
-
             const savedKey = localStorage.getItem('om_tea_order_key');
             if(savedKey) {
                 activeOrderKey = savedKey;
                 document.getElementById('resume-order-btn').style.display = 'block';
                 trackLiveOrder(activeOrderKey);
             }
-
             const savedTable = localStorage.getItem('om_tea_selected_table');
             if(savedTable) {
                 selectedTable = savedTable;
@@ -227,10 +201,11 @@
                 historyList.innerHTML = '<p style="color:gray; font-size:0.9rem;">હજુ સુધી કોઈ ઓર્ડર નથી.</p>';
                 return;
             }
+            // હિસ્ટ્રીમાં બધા કલર ટેગ્સ હાઈડ કરવા માટે અપડેટ
             historyList.innerHTML = history.map((h, index) => `
                 <div class="history-card">
                     <span class="history-date">${h.dateStr}</span>
-                    <div class="history-items">${h.items.map(i => i.replace(" (NEW)", "").replace(" (CANCELLED)", "")).join(", ")}</div>
+                    <div class="history-items">${h.items.map(i => i.replace(/\(NEW(-\d+)?\)/g, "").replace(" (CANCELLED)", "").replace(" (REDUCED)", "")).join(", ")}</div>
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
                         <b style="color:var(--primary);">₹${h.total}</b>
                         <button class="reorder-btn" onclick="reorderItems(${index})">રી-ઓર્ડર 🔁</button>
@@ -245,11 +220,12 @@
             if(confirm("આ જૂના ઓર્ડરની બધી આઈટમ કાર્ટમાં ઉમેરવી છે?")) {
                 cart = {};
                 oldOrder.items.forEach(itemStr => {
-                    if(!itemStr.includes("(CANCELLED)")) {
-                        const cleanLine = itemStr.replace(" (NEW)", "");
-                        const [q, ...nParts] = cleanLine.split('x ');
-                        const name = nParts.join('x ').trim();
-                        cart[name] = (cart[name] || 0) + parseInt(q);
+                    if(!itemStr.includes("(CANCELLED)") && !itemStr.includes("(REDUCED)")) {
+                        const cleanLine = itemStr.replace(/\(NEW(-\d+)?\)/g, "").trim();
+                        const parts = cleanLine.split('x ');
+                        const q = parseInt(parts[0]);
+                        const name = parts.slice(1).join('x ').trim();
+                        cart[name] = (cart[name] || 0) + q;
                     }
                 });
                 localStorage.setItem('om_tea_current_cart', JSON.stringify(cart));
@@ -321,39 +297,68 @@
 
         async function submitOrder() {
             const currentItems = Object.entries(cart).filter(([n,q]) => q > 0);
-            if(!selectedTable || currentItems.length === 0) return alert("ટેબલ અને આઈટમ પસંદ કરો!");
+            if(!selectedTable || currentItems.length === 0) return alert("ટેબલ અને આઈટમ પસંદ કરો!");            
             
             const specialNote = document.getElementById('special-note').value;
             let finalItems = [];
+            let updatedEditCount = 0;
 
             if(isEditMode && activeOrderKey) {
                 const snap = await database.ref('orders/' + activeOrderKey).once('value');
                 const oldOrder = snap.val();
                 if(!oldOrder) return alert("ઓર્ડર મળ્યો નથી!");
 
-                const oldMap = {};
-                oldOrder.items.forEach(itemStr => {
-                    if(!itemStr.includes("(CANCELLED)")) {
-                        const parts = itemStr.replace(" (NEW)", "").split('x ');
-                        const qty = parseInt(parts[0]);
-                        const name = parts[1].trim();
-                        oldMap[name] = (oldMap[name] || 0) + qty;
+                let currentEditCount = oldOrder.editCount || 0;
+                updatedEditCount = currentEditCount + 1; // એડિટ માટે કાઉન્ટ વધાર્યો
+
+                let oldTagsMap = {};
+                oldOrder.items.forEach(line => {
+                    if(!line.includes("(CANCELLED)") && !line.includes("(REDUCED)")) {
+                        let firstSpace = line.indexOf('x ');
+                        if(firstSpace !== -1) {
+                            let qty = parseInt(line.substring(0, firstSpace));
+                            let restStr = line.substring(firstSpace + 2).trim();
+                            
+                            let tag = '';
+                            let name = restStr;
+                            
+                            const newNumMatch = restStr.match(/\s\(NEW(-\d+)?\)$/);
+                            if (newNumMatch) {
+                                tag = newNumMatch[0].trim();
+                                name = restStr.replace(tag, '').trim();
+                            } else if (restStr.endsWith('(NEW)')) {
+                                tag = '(NEW)';
+                                name = restStr.replace('(NEW)', '').trim();
+                            }
+                            
+                            if(!oldTagsMap[name]) oldTagsMap[name] = [];
+                            oldTagsMap[name].push({ qty: qty, tag: tag });
+                        }
                     }
                 });
 
-                const allNames = new Set([...Object.keys(oldMap), ...Object.keys(cart)]);
+                const allNames = new Set([...Object.keys(oldTagsMap), ...Object.keys(cart)]);
                 allNames.forEach(name => {
-                    const oldQty = oldMap[name] || 0;
+                    const oldList = oldTagsMap[name] || [];
+                    const oldQty = oldList.reduce((sum, item) => sum + item.qty, 0);
                     const newQty = cart[name] || 0;
 
                     if (newQty > oldQty) {
-                        if (oldQty > 0) finalItems.push(`${oldQty}x ${name}`);
-                        finalItems.push(`${newQty - oldQty}x ${name} (NEW)`);
+                        // જૂની આઈટમ પોતાના જૂના કલર ટેગ સાથે 
+                        oldList.forEach(oldItem => {
+                            let tagStr = oldItem.tag ? ` ${oldItem.tag}` : '';
+                            finalItems.push(`${oldItem.qty}x ${name}${tagStr}`);
+                        });
+                        // નવી આઈટમ નવા કલર ટેગ સાથે 
+                        finalItems.push(`${newQty - oldQty}x ${name} (NEW-${updatedEditCount})`);
                     } else if (newQty < oldQty) {
                         if (newQty > 0) finalItems.push(`${newQty}x ${name}`);
                         finalItems.push(`${oldQty - newQty}x ${name} (CANCELLED)`);
                     } else if (newQty > 0) {
-                        finalItems.push(`${newQty}x ${name}`);
+                        oldList.forEach(oldItem => {
+                            let tagStr = oldItem.tag ? ` ${oldItem.tag}` : '';
+                            finalItems.push(`${oldItem.qty}x ${name}${tagStr}`);
+                        });
                     }
                 });
 
@@ -369,11 +374,17 @@
                 total: document.getElementById('cart-total').innerText.replace('₹',''), 
                 status: 'pending', note: specialNote, lastUpdated: Date.now() 
             };
+            
+            // એડિટ કાઉન્ટ ડેટાબેઝમાં મોકલવા માટે
+            if(isEditMode || updatedEditCount > 0) {
+                order.editCount = updatedEditCount;
+            }
 
             if(activeOrderKey) {
                 await database.ref('orders/' + activeOrderKey).update(order);
             } else {
                 order.ts = Date.now();
+                order.editCount = 0; // નવો ઓર્ડર એટલે 0
                 const res = await database.ref('orders/').push(order);
                 activeOrderKey = res.key;
                 localStorage.setItem('om_tea_order_key', activeOrderKey);
@@ -398,15 +409,21 @@
                 document.getElementById('st-total-amt').innerText = "₹" + o.total;
 
                 document.getElementById('st-items-list').innerHTML = o.items.map(i => {
-                    const isNew = i.includes("(NEW)"), isCan = i.includes("(CANCELLED)");
-                    const p = i.split('x ');
+                    const isNew = i.match(/\(NEW(-\d+)?\)/);
+                    const isCan = i.includes("(CANCELLED)") || i.includes("(REDUCED)");
+                    
+                    let cleanText = i.replace(/\(NEW(-\d+)?\)/g, "").replace("(CANCELLED)", "").replace("(REDUCED)", "").trim();
+                    const p = cleanText.split('x ');
+                    const q = p[0];
+                    const namePart = p.slice(1).join('x ');
+                    
                     let rowStyle = "", label = "";
                     if(isNew) label = `<span style="font-size:0.7rem; background:var(--yellow); color:black; padding:2px 6px; border-radius:4px; margin-left:8px; font-weight:bold;">NEW</span>`;
                     else if(isCan) {
                         rowStyle = 'style="background:#ffecec; border-radius:5px; margin-bottom:2px;"';
                         label = `<span style="font-size:0.7rem; background:var(--danger); color:white; padding:2px 6px; border-radius:4px; margin-left:8px; font-weight:bold;">CANCELLED</span>`;
                     }
-                    return `<div class="order-item-row" ${rowStyle}><span style="${isCan ? 'color:var(--danger); font-weight:bold;' : ''}">${p[1].replace(" (NEW)", "").replace(" (CANCELLED)", "")}${label}</span><b style="${isCan ? 'color:var(--danger); text-decoration:line-through;' : ''}">${p[0]}</b></div>`;
+                    return `<div class="order-item-row" ${rowStyle}><span style="${isCan ? 'color:var(--danger); font-weight:bold;' : ''}">${namePart}${label}</span><b style="${isCan ? 'color:var(--danger); text-decoration:line-through;' : ''}">${q}</b></div>`;
                 }).join('');
 
                 if(o.note) document.getElementById('st-note-display').innerHTML = `<div class="st-note-box"><b>નોંધ:</b> ${o.note}</div>`;
@@ -453,37 +470,27 @@
 
         function openOrderDetail() { document.getElementById('order-detail-page').style.display = 'flex'; }
         function closeOrderDetail() { document.getElementById('order-detail-page').style.display = 'none'; }
-        
+
         function enableEditMode() {
             isEditMode = true;
             localStorage.setItem('om_tea_edit_mode', 'true');
             document.getElementById('main-submit-btn').innerText = "સુધારો મોકલો (UPDATE)";
-            
             database.ref('orders/' + activeOrderKey).once('value', snap => {
-                const o = snap.val();
-                if(!o) return;
-                
-                // Reset Cart & UI
-                cart = {};
+                const o = snap.val(); cart = {};
                 document.querySelectorAll('b[id^="qty-"]').forEach(el => el.innerText = '0');
-                
                 if(o.note) document.getElementById('special-note').value = o.note;
                 
                 o.items.forEach(line => {
-                    if(!line.includes("(CANCELLED)")) {
-                        const cleanLine = line.replace(" (NEW)", "");
+                    if(!line.includes("(CANCELLED)") && !line.includes("(REDUCED)")) {
+                        const cleanLine = line.replace(/\(NEW(-\d+)?\)/g, "").trim();
                         const parts = cleanLine.split('x ');
                         const q = parseInt(parts[0]);
-                        const n = parts[1].trim();
-                        
+                        const n = parts.slice(1).join('x ').trim();
                         cart[n] = (cart[n] || 0) + q;
-                        const qtyEl = document.getElementById(`qty-${n}`);
-                        if(qtyEl) qtyEl.innerText = cart[n];
+                        if(document.getElementById(`qty-${n}`)) document.getElementById(`qty-${n}`).innerText = cart[n];
                     }
                 });
-                
                 updateTotal();
-                localStorage.setItem('om_tea_current_cart', JSON.stringify(cart));
                 closeOrderDetail();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
